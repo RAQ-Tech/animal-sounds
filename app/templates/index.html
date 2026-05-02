@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ app_name }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <main class="container">
+    <header class="card">
+      <p class="eyebrow">Unraid-Friendly Starter</p>
+      <h1>{{ app_name }}</h1>
+      <p class="muted">A reusable Python + lightweight Web UI foundation.</p>
+    </header>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Status</h2>
+        <p><span class="dot"></span> Healthy starter app running on internal port 3000</p>
+        <ul>
+          <li>Health endpoint: <code>/health</code></li>
+          <li>Example API endpoint: <code>/api/info</code></li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>Configuration</h2>
+        <ul>
+          <li><strong>APP_ENV:</strong> {{ app_env }}</li>
+          <li><strong>LOG_LEVEL:</strong> {{ log_level }}</li>
+          <li><strong>FEATURE_PLACEHOLDER:</strong> {{ feature_placeholder }}</li>
+          <li><strong>CONFIG_PATH:</strong> {{ config_path }}</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="card">
+      <h2>Feature Workspace</h2>
+      <p class="muted">Use this section as the landing area for your future tools and project-specific UI modules.</p>
+      <div class="placeholder">Ready for your next feature.</div>
+    </section>
+  </main>
+</body>
+</html>
