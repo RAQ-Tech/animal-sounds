@@ -1,7 +1,11 @@
 (() => {
   const cards = Array.from(document.querySelectorAll(".animal-card"));
+  const throwToggle = document.getElementById("throw-mode-toggle");
+  const throwLayer = document.getElementById("pokeball-layer");
   const liveStatus = document.getElementById("sound-status");
   let audioContext = null;
+  let throwModeActive = false;
+  let throwAnimationTimer = null;
 
   function getAudioContext() {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -14,6 +18,31 @@
     }
 
     return audioContext;
+  }
+
+  function setLiveStatus(message) {
+    if (liveStatus) {
+      liveStatus.textContent = message;
+    }
+  }
+
+  function setThrowMode(active) {
+    throwModeActive = active;
+
+    if (throwToggle) {
+      throwToggle.classList.toggle("is-armed", active);
+      throwToggle.setAttribute("aria-pressed", active ? "true" : "false");
+    }
+
+    setLiveStatus(
+      active
+        ? "Throw mode ready. Choose an animal to throw a Pokeball."
+        : "Throw mode off. Animal cards play sounds.",
+    );
+  }
+
+  function isActivationKey(event) {
+    return event.key === "Enter" || event.key === " " || event.key === "Space" || event.key === "Spacebar";
   }
 
   function createGain(context, start, duration, peak = 0.25, attack = 0.025, release = 0.08) {
@@ -227,15 +256,98 @@
     card.classList.add("is-playing");
     window.setTimeout(() => card.classList.remove("is-playing"), duration);
 
-    if (liveStatus) {
-      liveStatus.textContent = `${animalName} says ${soundLabel}.`;
+    setLiveStatus(`${animalName} says ${soundLabel}.`);
+  }
+
+  function clearThrowAnimation() {
+    if (throwAnimationTimer) {
+      window.clearTimeout(throwAnimationTimer);
+      throwAnimationTimer = null;
+    }
+
+    if (throwLayer) {
+      throwLayer.replaceChildren();
     }
   }
 
+  function createPokeball() {
+    const ball = document.createElement("span");
+    ball.className = "pokeball";
+    ball.innerHTML = '<span class="pokeball-center"></span>';
+    return ball;
+  }
+
+  function throwPokeball(targetCard) {
+    if (!throwLayer || !throwToggle) {
+      return;
+    }
+
+    clearThrowAnimation();
+
+    const throwRect = throwToggle.getBoundingClientRect();
+    const targetRect = targetCard.getBoundingClientRect();
+    const startX = throwRect.left + throwRect.width / 2;
+    const startY = throwRect.top + throwRect.height / 2;
+    const endX = targetRect.left + targetRect.width / 2;
+    const endY = targetRect.top + Math.max(48, targetRect.height * 0.42);
+    const arcY = Math.min(startY, endY) - 110;
+    const animalName = targetCard.dataset.animalName;
+    const ball = createPokeball();
+
+    ball.style.setProperty("--start-x", `${startX}px`);
+    ball.style.setProperty("--start-y", `${startY}px`);
+    ball.style.setProperty("--arc-x", `${(startX + endX) / 2}px`);
+    ball.style.setProperty("--arc-y", `${arcY}px`);
+    ball.style.setProperty("--end-x", `${endX}px`);
+    ball.style.setProperty("--end-y", `${endY}px`);
+
+    throwLayer.append(ball);
+    targetCard.classList.add("is-pokeball-target");
+    setLiveStatus(`Pokeball thrown at ${animalName}.`);
+
+    throwAnimationTimer = window.setTimeout(() => {
+      targetCard.classList.remove("is-pokeball-target");
+      clearThrowAnimation();
+      setLiveStatus(`Pokeball bounced off ${animalName}.`);
+    }, 960);
+  }
+
   function activateCard(event) {
-    playAnimal(event.currentTarget).catch(() => {
-      if (liveStatus) {
-        liveStatus.textContent = "Sound is unavailable in this browser.";
+    const card = event.currentTarget;
+    const shouldThrow = throwModeActive;
+
+    playAnimal(card)
+      .then(() => {
+        if (!shouldThrow) {
+          return;
+        }
+
+        setThrowMode(false);
+        throwPokeball(card);
+      })
+      .catch(() => {
+        setLiveStatus("Sound is unavailable in this browser.");
+        if (shouldThrow) {
+          setThrowMode(false);
+        }
+      });
+  }
+
+  if (throwToggle) {
+    throwToggle.addEventListener("click", () => {
+      setThrowMode(!throwModeActive);
+    });
+
+    throwToggle.addEventListener("keydown", (event) => {
+      if (isActivationKey(event)) {
+        event.preventDefault();
+        setThrowMode(!throwModeActive);
+        return;
+      }
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setThrowMode(false);
       }
     });
   }
@@ -243,7 +355,7 @@
   cards.forEach((card) => {
     card.addEventListener("click", activateCard);
     card.addEventListener("keydown", (event) => {
-      if (event.key !== "Enter" && event.key !== " ") {
+      if (!isActivationKey(event)) {
         return;
       }
 

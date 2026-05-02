@@ -6,6 +6,7 @@ Animal Sounds is a lightweight, offline-friendly Flask WebUI for animal pictures
 
 - Shows 14 bundled animal illustrations: cow, horse, sheep, pig, chicken, duck, goat, donkey, dog, cat, lion, monkey, gorilla, and tiger.
 - Plays a distinct generated sound when an animal card is activated.
+- Includes a Throw Pokeball mode that launches a local CSS/JS animation at the next selected animal.
 - Uses local HTML, CSS, JavaScript, and SVG assets only.
 - Keeps `/config` reserved as the primary persistent path for future settings and app state.
 - Provides fast health and catalog API endpoints.
@@ -121,6 +122,7 @@ http://<your-unraid-ip>:8080/health
 ## Notes
 
 - Sounds are generated in the browser with the Web Audio API. No audio files or network media are required.
+- Pokeball throwing is animation-only; it does not save capture state or write to `/config`.
 - The app keeps the internal container port fixed at `3000`.
 - `/config` is currently reserved for future settings/state and should remain mapped in Docker/Unraid deployments.
 - The UI intentionally stays framework-free to keep the project easy to extend.
