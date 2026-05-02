@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="horse-title">
+  <title id="horse-title">Playful horse illustration</title>
+  <rect width="240" height="180" rx="18" fill="#e4f4ff"/>
+  <path d="M0 134c42-8 78-7 108 1 39 10 78 7 132-14v59H0z" fill="#a6df70"/>
+  <ellipse cx="128" cy="105" rx="63" ry="35" fill="#b06d3f" stroke="#2b2723" stroke-width="5"/>
+  <path d="M78 91c2-27 17-49 45-56 10 14 12 33 4 53z" fill="#b06d3f" stroke="#2b2723" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M95 43c-10-19-1-26 13-5M118 37c8-18 20-14 15 7" fill="#8d4b2c" stroke="#2b2723" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M103 39c-2 23-9 39-25 50 3-26 11-43 25-50z" fill="#3b2418"/>
+  <circle cx="108" cy="63" r="4" fill="#2b2723"/>
+  <path d="M86 78c10 6 22 6 33-2" fill="none" stroke="#2b2723" stroke-width="4" stroke-linecap="round"/>
+  <path d="M188 101c24-12 30-30 22-48" fill="none" stroke="#3b2418" stroke-width="9" stroke-linecap="round"/>
+  <path d="M84 132v28M119 137v27M153 136v27M176 127v27" stroke="#2b2723" stroke-width="8" stroke-linecap="round"/>
+  <path d="M80 160h14M113 164h14M147 163h14M170 154h14" stroke="#2b2723" stroke-width="5" stroke-linecap="round"/>
+</svg>

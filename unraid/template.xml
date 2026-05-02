@@ -1,26 +1,25 @@
 <?xml version="1.0"?>
 <Container version="2">
-  <Name>Starter-WebUI-App</Name>
-  <Repository>yourdockerhubuser/starter-webui-app:latest</Repository>
-  <Registry>https://hub.docker.com/r/yourdockerhubuser/starter-webui-app</Registry>
+  <Name>Animal-Sounds</Name>
+  <Repository>ghcr.io/raq-tech/animal-sounds:latest</Repository>
+  <Registry>https://github.com/RAQ-Tech/animal-sounds/pkgs/container/animal-sounds</Registry>
   <Network>bridge</Network>
   <MyIP/>
   <Shell>sh</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/your-org/your-repo/issues</Support>
-  <Project>https://github.com/your-org/your-repo</Project>
-  <Overview>Reusable Unraid-first Python + lightweight WebUI starter. Internal app port is fixed at 3000. /config is the primary persistent appdata path.</Overview>
-  <Category>Tools:Utilities</Category>
+  <Support>https://github.com/RAQ-Tech/animal-sounds/issues</Support>
+  <Project>https://github.com/RAQ-Tech/animal-sounds</Project>
+  <Overview>Offline-friendly farm animal picture and sound WebUI. Internal app port is fixed at 3000. /config remains the primary persistent appdata path for future settings.</Overview>
+  <Category>MediaApp:Other Kids:Education</Category>
   <WebUI>http://[IP]:[PORT:1]</WebUI>
-  <TemplateURL>https://raw.githubusercontent.com/your-org/your-repo/main/unraid/template.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/your-org/your-repo/main/docs/icon.png</Icon>
+  <TemplateURL>https://raw.githubusercontent.com/RAQ-Tech/animal-sounds/main/unraid/template.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/RAQ-Tech/animal-sounds/main/unraid/animal-sounds-icon.png</Icon>
 
   <Config Name="WebUI Port" Target="3000" Default="8080" Mode="tcp" Description="Host port mapped to container port 3000" Type="Port" Display="always" Required="true" Mask="false">8080</Config>
 
-  <Config Name="App Config (Primary)" Target="/config" Default="/mnt/user/appdata/starter-webui-app" Mode="rw" Description="Primary persistent path for settings/state (map to appdata)" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/starter-webui-app</Config>
+  <Config Name="App Config (Primary)" Target="/config" Default="/mnt/user/appdata/animal-sounds" Mode="rw" Description="Primary persistent path for future settings/state (map to appdata)" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/animal-sounds</Config>
 
-  <Config Name="APP_NAME" Target="APP_NAME" Default="Starter WebUI App" Mode="" Description="Display name in the UI and API responses" Type="Variable" Display="always" Required="false" Mask="false">Starter WebUI App</Config>
+  <Config Name="APP_NAME" Target="APP_NAME" Default="Animal Sounds" Mode="" Description="Display name in the UI and API responses" Type="Variable" Display="always" Required="false" Mask="false">Animal Sounds</Config>
   <Config Name="APP_ENV" Target="APP_ENV" Default="production" Mode="" Description="Application environment label" Type="Variable" Display="always" Required="false" Mask="false">production</Config>
-  <Config Name="LOG_LEVEL" Target="LOG_LEVEL" Default="info" Mode="" Description="Logging level placeholder for future features" Type="Variable" Display="always" Required="false" Mask="false">info</Config>
-  <Config Name="FEATURE_PLACEHOLDER" Target="FEATURE_PLACEHOLDER" Default="true" Mode="" Description="Feature flag placeholder" Type="Variable" Display="always" Required="false" Mask="false">true</Config>
+  <Config Name="LOG_LEVEL" Target="LOG_LEVEL" Default="info" Mode="" Description="Application log level" Type="Variable" Display="always" Required="false" Mask="false">info</Config>
 </Container>

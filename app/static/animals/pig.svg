@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="pig-title">
+  <title id="pig-title">Playful pig illustration</title>
+  <rect width="240" height="180" rx="18" fill="#e8f7ff"/>
+  <path d="M0 130c35-8 74-7 113 3 42 10 79 7 127-13v60H0z" fill="#a7df65"/>
+  <ellipse cx="125" cy="108" rx="65" ry="39" fill="#f7a9bd" stroke="#3d2d36" stroke-width="5"/>
+  <circle cx="72" cy="91" r="31" fill="#f7a9bd" stroke="#3d2d36" stroke-width="5"/>
+  <path d="M54 64l-18-17 4 26M87 64l20-17-5 28" fill="#f58aa8" stroke="#3d2d36" stroke-width="5" stroke-linejoin="round"/>
+  <circle cx="62" cy="86" r="4" fill="#3d2d36"/>
+  <circle cx="83" cy="86" r="4" fill="#3d2d36"/>
+  <ellipse cx="73" cy="101" rx="17" ry="11" fill="#ffd0da" stroke="#3d2d36" stroke-width="4"/>
+  <circle cx="67" cy="101" r="2.8" fill="#3d2d36"/>
+  <circle cx="79" cy="101" r="2.8" fill="#3d2d36"/>
+  <path d="M83 133v23M119 142v22M154 140v23" stroke="#3d2d36" stroke-width="8" stroke-linecap="round"/>
+  <path d="M187 104c23-6 25 16 9 15 19 13 37-13 13-27" fill="none" stroke="#3d2d36" stroke-width="6" stroke-linecap="round"/>
+</svg>

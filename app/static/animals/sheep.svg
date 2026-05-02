@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="sheep-title">
+  <title id="sheep-title">Playful sheep illustration</title>
+  <rect width="240" height="180" rx="18" fill="#eaf7ff"/>
+  <path d="M0 128c37-10 77-9 114 3 39 13 76 9 126-13v62H0z" fill="#abe675"/>
+  <circle cx="83" cy="94" r="25" fill="#fff8e8" stroke="#2c3640" stroke-width="5"/>
+  <circle cx="111" cy="78" r="30" fill="#fff8e8" stroke="#2c3640" stroke-width="5"/>
+  <circle cx="145" cy="84" r="29" fill="#fff8e8" stroke="#2c3640" stroke-width="5"/>
+  <circle cx="163" cy="111" r="28" fill="#fff8e8" stroke="#2c3640" stroke-width="5"/>
+  <circle cx="128" cy="118" r="32" fill="#fff8e8" stroke="#2c3640" stroke-width="5"/>
+  <circle cx="94" cy="119" r="27" fill="#fff8e8" stroke="#2c3640" stroke-width="5"/>
+  <ellipse cx="65" cy="105" rx="23" ry="28" fill="#3f4850" stroke="#2c3640" stroke-width="5"/>
+  <ellipse cx="47" cy="101" rx="9" ry="15" fill="#3f4850" stroke="#2c3640" stroke-width="4"/>
+  <circle cx="58" cy="100" r="3.5" fill="#fff8e8"/>
+  <circle cx="72" cy="100" r="3.5" fill="#fff8e8"/>
+  <path d="M59 114c5 4 10 4 15 0" fill="none" stroke="#fff8e8" stroke-width="3" stroke-linecap="round"/>
+  <path d="M89 139v21M117 143v21M149 139v21" stroke="#2c3640" stroke-width="8" stroke-linecap="round"/>
+</svg>

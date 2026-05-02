@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="duck-title">
+  <title id="duck-title">Playful duck illustration</title>
+  <rect width="240" height="180" rx="18" fill="#dff6ff"/>
+  <path d="M0 133c27-8 58-7 89 1 44 12 87 6 151-17v63H0z" fill="#99dff0"/>
+  <ellipse cx="129" cy="111" rx="61" ry="37" fill="#ffd84d" stroke="#303233" stroke-width="5"/>
+  <circle cx="83" cy="83" r="31" fill="#ffd84d" stroke="#303233" stroke-width="5"/>
+  <path d="M55 83l-30-10 28 24z" fill="#ff9f1c" stroke="#303233" stroke-width="5" stroke-linejoin="round"/>
+  <circle cx="90" cy="75" r="4" fill="#303233"/>
+  <path d="M141 83c26 3 48 17 59 41-24 4-47-4-65-21z" fill="#f5be32" stroke="#303233" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M104 145c16 7 37 7 55 0" fill="none" stroke="#303233" stroke-width="5" stroke-linecap="round"/>
+  <path d="M105 151h-16M145 151h18" stroke="#ff9f1c" stroke-width="7" stroke-linecap="round"/>
+</svg>

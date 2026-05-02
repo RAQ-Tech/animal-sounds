@@ -3,14 +3,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: starter-webui-app
+    container_name: animal-sounds
     ports:
       - "${HOST_PORT:-8080}:3000"
     environment:
-      APP_NAME: ${APP_NAME:-Starter WebUI App}
+      APP_NAME: ${APP_NAME:-Animal Sounds}
       APP_ENV: ${APP_ENV:-production}
       LOG_LEVEL: ${LOG_LEVEL:-info}
-      FEATURE_PLACEHOLDER: ${FEATURE_PLACEHOLDER:-true}
       CONFIG_PATH: /config
     volumes:
       - ./config:/config

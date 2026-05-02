@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="goat-title">
+  <title id="goat-title">Playful goat illustration</title>
+  <rect width="240" height="180" rx="18" fill="#e8f7ff"/>
+  <path d="M0 130c36-10 73-7 110 3 40 11 82 8 130-14v61H0z" fill="#a6df70"/>
+  <ellipse cx="131" cy="107" rx="59" ry="34" fill="#d8d8cf" stroke="#2f3437" stroke-width="5"/>
+  <circle cx="73" cy="85" r="29" fill="#d8d8cf" stroke="#2f3437" stroke-width="5"/>
+  <path d="M56 59c-15-25-2-34 10-11M86 58c16-25 29-14 12 9" fill="none" stroke="#caa55a" stroke-width="8" stroke-linecap="round"/>
+  <path d="M46 82l-17-12 6 24M99 82l19-12-8 26" fill="#bfc0b7" stroke="#2f3437" stroke-width="5" stroke-linejoin="round"/>
+  <circle cx="63" cy="80" r="4" fill="#2f3437"/>
+  <circle cx="83" cy="80" r="4" fill="#2f3437"/>
+  <ellipse cx="73" cy="96" rx="14" ry="10" fill="#f2eee0" stroke="#2f3437" stroke-width="4"/>
+  <path d="M66 111c6 17 15 17 21 0" fill="#f2eee0" stroke="#2f3437" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M91 135v25M124 139v25M159 135v25" stroke="#2f3437" stroke-width="8" stroke-linecap="round"/>
+  <path d="M188 98c19-4 26-17 20-31" fill="none" stroke="#2f3437" stroke-width="6" stroke-linecap="round"/>
+</svg>

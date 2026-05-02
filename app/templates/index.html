@@ -5,41 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{ app_name }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
 </head>
 <body>
-  <main class="container">
-    <header class="card">
-      <p class="eyebrow">Unraid-Friendly Starter</p>
+  <main class="app-shell">
+    <header class="hero">
+      <p class="eyebrow">Farmyard WebUI</p>
       <h1>{{ app_name }}</h1>
-      <p class="muted">A reusable Python + lightweight Web UI foundation.</p>
+      <p class="intro">A bright farm soundboard for curious listeners.</p>
     </header>
 
-    <section class="grid">
-      <article class="card">
-        <h2>Status</h2>
-        <p><span class="dot"></span> Healthy starter app running on internal port 3000</p>
-        <ul>
-          <li>Health endpoint: <code>/health</code></li>
-          <li>Example API endpoint: <code>/api/info</code></li>
-        </ul>
-      </article>
-
-      <article class="card">
-        <h2>Configuration</h2>
-        <ul>
-          <li><strong>APP_ENV:</strong> {{ app_env }}</li>
-          <li><strong>LOG_LEVEL:</strong> {{ log_level }}</li>
-          <li><strong>FEATURE_PLACEHOLDER:</strong> {{ feature_placeholder }}</li>
-          <li><strong>CONFIG_PATH:</strong> {{ config_path }}</li>
-        </ul>
-      </article>
+    <section class="animal-grid" aria-label="Farm animals">
+      {% for animal in animals %}
+      <button
+        type="button"
+        class="animal-card"
+        data-animal-id="{{ animal.id }}"
+        data-animal-name="{{ animal.name }}"
+        data-sound-label="{{ animal.sound_label }}"
+        data-sound-pattern="{{ animal.sound_pattern }}"
+        aria-label="{{ animal.name }} says {{ animal.sound_label }}"
+      >
+        <span class="animal-image-frame">
+          <img
+            src="{{ animal.image_url }}"
+            alt="{{ animal.name }} illustration"
+            width="240"
+            height="180"
+            draggable="false"
+          />
+        </span>
+        <span class="animal-copy">
+          <span class="animal-name">{{ animal.name }}</span>
+          <span class="sound-chip">{{ animal.sound_label }}</span>
+        </span>
+      </button>
+      {% endfor %}
     </section>
 
-    <section class="card">
-      <h2>Feature Workspace</h2>
-      <p class="muted">Use this section as the landing area for your future tools and project-specific UI modules.</p>
-      <div class="placeholder">Ready for your next feature.</div>
+    <section class="system-panel" aria-label="Application status">
+      <p><span class="status-dot"></span> Running on internal port <code>3000</code></p>
+      <p>Config path: <code>{{ config_path }}</code></p>
+      <p>API: <code>/health</code> <code>/api/info</code> <code>/api/animals</code></p>
     </section>
+
+    <div id="sound-status" class="sr-only" aria-live="polite"></div>
   </main>
 </body>
 </html>

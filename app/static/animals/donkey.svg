@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="donkey-title">
+  <title id="donkey-title">Playful donkey illustration</title>
+  <rect width="240" height="180" rx="18" fill="#e6f6ff"/>
+  <path d="M0 132c39-10 78-8 116 2 42 12 80 7 124-14v60H0z" fill="#a7df65"/>
+  <ellipse cx="130" cy="109" rx="62" ry="35" fill="#9fa6aa" stroke="#293137" stroke-width="5"/>
+  <path d="M79 88c-1-28 12-48 37-58 13 13 15 35 5 58z" fill="#9fa6aa" stroke="#293137" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M91 43c-13-31 1-39 18-10M114 39c13-31 28-25 15 8" fill="#8c9298" stroke="#293137" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M93 54c6 13 4 27-5 42" fill="none" stroke="#4d555b" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="103" cy="65" r="4" fill="#293137"/>
+  <ellipse cx="108" cy="82" rx="17" ry="11" fill="#e4e0d8" stroke="#293137" stroke-width="4"/>
+  <circle cx="102" cy="82" r="2.5" fill="#293137"/>
+  <circle cx="114" cy="82" r="2.5" fill="#293137"/>
+  <path d="M187 104c22-3 31-20 25-38" fill="none" stroke="#293137" stroke-width="7" stroke-linecap="round"/>
+  <path d="M85 136v26M119 141v25M154 140v25M177 132v25" stroke="#293137" stroke-width="8" stroke-linecap="round"/>
+</svg>

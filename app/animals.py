@@ -1,0 +1,58 @@
+ANIMALS = (
+    {
+        "id": "cow",
+        "name": "Cow",
+        "sound_label": "Moo",
+        "image_path": "animals/cow.svg",
+        "sound_pattern": "moo",
+    },
+    {
+        "id": "horse",
+        "name": "Horse",
+        "sound_label": "Neigh",
+        "image_path": "animals/horse.svg",
+        "sound_pattern": "neigh",
+    },
+    {
+        "id": "sheep",
+        "name": "Sheep",
+        "sound_label": "Baa",
+        "image_path": "animals/sheep.svg",
+        "sound_pattern": "baa",
+    },
+    {
+        "id": "pig",
+        "name": "Pig",
+        "sound_label": "Oink",
+        "image_path": "animals/pig.svg",
+        "sound_pattern": "oink",
+    },
+    {
+        "id": "chicken",
+        "name": "Chicken",
+        "sound_label": "Cluck",
+        "image_path": "animals/chicken.svg",
+        "sound_pattern": "cluck",
+    },
+    {
+        "id": "duck",
+        "name": "Duck",
+        "sound_label": "Quack",
+        "image_path": "animals/duck.svg",
+        "sound_pattern": "quack",
+    },
+    {
+        "id": "goat",
+        "name": "Goat",
+        "sound_label": "Bleat",
+        "image_path": "animals/goat.svg",
+        "sound_pattern": "bleat",
+    },
+    {
+        "id": "donkey",
+        "name": "Donkey",
+        "sound_label": "Hee-haw",
+        "image_path": "animals/donkey.svg",
+        "sound_pattern": "hee-haw",
+    },
+)
