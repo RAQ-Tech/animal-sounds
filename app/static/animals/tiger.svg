@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="tiger-title">
+  <title id="tiger-title">Playful tiger illustration</title>
+  <rect width="240" height="180" rx="18" fill="#e8f7ff"/>
+  <path d="M0 132c37-10 75-8 113 3 42 12 81 7 127-15v60H0z" fill="#aee779"/>
+  <ellipse cx="135" cy="111" rx="57" ry="35" fill="#f28c28" stroke="#2d2a26" stroke-width="5"/>
+  <circle cx="81" cy="82" r="32" fill="#f28c28" stroke="#2d2a26" stroke-width="5"/>
+  <path d="M58 60l-13-25 27 13M102 60l17-25 8 31" fill="#f28c28" stroke="#2d2a26" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M69 55l-7 25M83 51v25M97 57l-8 22M122 87l-17 12M147 79l-10 20M170 91l-19 9" stroke="#2d2a26" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="72" cy="79" r="4" fill="#2d2a26"/>
+  <circle cx="91" cy="79" r="4" fill="#2d2a26"/>
+  <ellipse cx="82" cy="96" rx="16" ry="12" fill="#ffe0b2" stroke="#2d2a26" stroke-width="4"/>
+  <path d="M75 103c5 4 12 4 17 0" fill="none" stroke="#2d2a26" stroke-width="3" stroke-linecap="round"/>
+  <path d="M190 104c24-7 31-25 21-42" fill="none" stroke="#2d2a26" stroke-width="7" stroke-linecap="round"/>
+  <path d="M99 139v24M132 144v23M166 139v24" stroke="#2d2a26" stroke-width="8" stroke-linecap="round"/>
+</svg>

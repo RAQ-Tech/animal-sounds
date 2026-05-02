@@ -153,6 +153,58 @@
       noise(context, start + 0.34, 0.22, { gain: 0.035, frequency: 620, q: 2.2 });
       return 1050;
     },
+
+    bark(context, start) {
+      tone(context, start, 0.12, 210, 125, { gain: 0.28, type: "square", filterFrequency: 720 });
+      noise(context, start, 0.09, { gain: 0.085, frequency: 820, q: 3.6 });
+      tone(context, start + 0.22, 0.13, 240, 135, { gain: 0.26, type: "square", filterFrequency: 760 });
+      noise(context, start + 0.22, 0.09, { gain: 0.08, frequency: 900, q: 3.4 });
+      return 520;
+    },
+
+    meow(context, start) {
+      tone(context, start, 0.34, 520, 820, { gain: 0.16, type: "sine", filterFrequency: 1500 });
+      tone(context, start + 0.28, 0.44, 820, 420, { gain: 0.2, type: "triangle", filterFrequency: 1300 });
+      tone(context, start + 0.18, 0.38, 620, 520, { gain: 0.06, type: "sine", filterFrequency: 1100 });
+      return 880;
+    },
+
+    roar(context, start) {
+      noise(context, start, 0.82, { gain: 0.16, frequency: 260, q: 1.4 });
+      tone(context, start, 0.9, 145, 72, { gain: 0.3, type: "sawtooth", filterFrequency: 430 });
+      tone(context, start + 0.18, 0.64, 95, 58, { gain: 0.18, type: "triangle", filterFrequency: 360 });
+      return 1080;
+    },
+
+    chatter(context, start) {
+      for (let index = 0; index < 7; index += 1) {
+        const offset = index * 0.08;
+        tone(context, start + offset, 0.045, 740 + index * 24, 530, {
+          gain: 0.1,
+          type: "square",
+          attack: 0.004,
+          release: 0.018,
+          filterFrequency: 1700,
+        });
+      }
+      noise(context, start + 0.02, 0.48, { gain: 0.025, frequency: 1200, q: 2.8 });
+      return 700;
+    },
+
+    "gorilla-grunt"(context, start) {
+      tone(context, start, 0.24, 125, 86, { gain: 0.28, type: "sine", filterFrequency: 330 });
+      noise(context, start + 0.02, 0.22, { gain: 0.06, frequency: 280, q: 1.8 });
+      tone(context, start + 0.34, 0.26, 118, 78, { gain: 0.26, type: "triangle", filterFrequency: 300 });
+      noise(context, start + 0.36, 0.2, { gain: 0.055, frequency: 260, q: 1.7 });
+      return 780;
+    },
+
+    "tiger-growl"(context, start) {
+      noise(context, start, 0.68, { gain: 0.14, frequency: 210, q: 1.5 });
+      tone(context, start, 0.76, 120, 68, { gain: 0.28, type: "sawtooth", filterFrequency: 380 });
+      tone(context, start + 0.28, 0.34, 92, 62, { gain: 0.16, type: "square", filterFrequency: 330 });
+      return 920;
+    },
   };
 
   async function playAnimal(card) {

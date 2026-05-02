@@ -1,10 +1,10 @@
 # Animal Sounds
 
-Animal Sounds is a lightweight, offline-friendly Flask WebUI for farm animal pictures and generated animal noises. It is designed to run cleanly in Docker and Unraid with a fixed internal app port of `3000`.
+Animal Sounds is a lightweight, offline-friendly Flask WebUI for animal pictures and generated animal noises. It is designed to run cleanly in Docker and Unraid with a fixed internal app port of `3000`.
 
 ## What It Does
 
-- Shows 8 bundled farm animal illustrations: cow, horse, sheep, pig, chicken, duck, goat, and donkey.
+- Shows 14 bundled animal illustrations: cow, horse, sheep, pig, chicken, duck, goat, donkey, dog, cat, lion, monkey, gorilla, and tiger.
 - Plays a distinct generated sound when an animal card is activated.
 - Uses local HTML, CSS, JavaScript, and SVG assets only.
 - Keeps `/config` reserved as the primary persistent path for future settings and app state.
@@ -100,14 +100,20 @@ http://<your-unraid-ip>:8080/health
     │   ├── app.js
     │   ├── styles.css
     │   └── animals/
+    │       ├── cat.svg
     │       ├── chicken.svg
     │       ├── cow.svg
+    │       ├── dog.svg
     │       ├── donkey.svg
     │       ├── duck.svg
     │       ├── goat.svg
+    │       ├── gorilla.svg
     │       ├── horse.svg
+    │       ├── lion.svg
+    │       ├── monkey.svg
     │       ├── pig.svg
-    │       └── sheep.svg
+    │       ├── sheep.svg
+    │       └── tiger.svg
     └── templates/
         └── index.html
 ```

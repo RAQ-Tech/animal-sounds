@@ -9,7 +9,7 @@
   <Privileged>false</Privileged>
   <Support>https://github.com/RAQ-Tech/animal-sounds/issues</Support>
   <Project>https://github.com/RAQ-Tech/animal-sounds</Project>
-  <Overview>Offline-friendly farm animal picture and sound WebUI. Internal app port is fixed at 3000. /config remains the primary persistent appdata path for future settings.</Overview>
+  <Overview>Offline-friendly animal picture and sound WebUI. Internal app port is fixed at 3000. /config remains the primary persistent appdata path for future settings.</Overview>
   <Category>MediaApp:Other Kids:Education</Category>
   <WebUI>http://[IP]:[PORT:1]</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/RAQ-Tech/animal-sounds/main/unraid/template.xml</TemplateURL>

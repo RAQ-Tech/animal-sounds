@@ -59,7 +59,7 @@ def api_info():
             "app_name": APP_NAME,
             "environment": APP_ENV,
             "log_level": LOG_LEVEL,
-            "description": "Offline-friendly farm animal picture and sound WebUI.",
+            "description": "Offline-friendly animal picture and sound WebUI.",
             "animal_count": len(ANIMALS),
             "paths": {
                 "config": CONFIG_PATH,

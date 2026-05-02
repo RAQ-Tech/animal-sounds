@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="lion-title">
+  <title id="lion-title">Playful lion illustration</title>
+  <rect width="240" height="180" rx="18" fill="#e8f7ff"/>
+  <path d="M0 133c39-9 77-8 115 3 42 12 80 6 125-16v60H0z" fill="#c7e66c"/>
+  <ellipse cx="139" cy="112" rx="55" ry="34" fill="#d89a32" stroke="#2d2a26" stroke-width="5"/>
+  <circle cx="81" cy="82" r="42" fill="#a65b25" stroke="#2d2a26" stroke-width="5"/>
+  <circle cx="81" cy="82" r="28" fill="#f0b646" stroke="#2d2a26" stroke-width="4"/>
+  <circle cx="72" cy="78" r="4" fill="#2d2a26"/>
+  <circle cx="91" cy="78" r="4" fill="#2d2a26"/>
+  <path d="M82 88l-6 7h12z" fill="#2d2a26"/>
+  <path d="M70 100c7 6 17 6 24 0" fill="none" stroke="#2d2a26" stroke-width="3" stroke-linecap="round"/>
+  <path d="M50 55c-17-13-6-30 12-18M110 55c18-13 29 5 12 18" fill="#d89a32" stroke="#2d2a26" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M190 104c23-7 31-24 22-41" fill="none" stroke="#2d2a26" stroke-width="7" stroke-linecap="round"/>
+  <path d="M104 140v23M136 144v23M169 139v24" stroke="#2d2a26" stroke-width="8" stroke-linecap="round"/>
+</svg>

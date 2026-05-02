@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="gorilla-title">
+  <title id="gorilla-title">Playful gorilla illustration</title>
+  <rect width="240" height="180" rx="18" fill="#e8f7ff"/>
+  <path d="M0 132c38-10 77-8 114 3 42 12 80 7 126-15v60H0z" fill="#a6df70"/>
+  <ellipse cx="139" cy="113" rx="55" ry="36" fill="#555c61" stroke="#25292c" stroke-width="5"/>
+  <circle cx="84" cy="84" r="35" fill="#555c61" stroke="#25292c" stroke-width="5"/>
+  <path d="M55 75c-18-13-30 2-18 21 15 2 25-7 28-18M112 75c19-13 30 3 17 22-15 1-25-8-28-19" fill="#444a4f" stroke="#25292c" stroke-width="5" stroke-linejoin="round"/>
+  <ellipse cx="84" cy="94" rx="24" ry="17" fill="#a0a7aa" stroke="#25292c" stroke-width="4"/>
+  <circle cx="74" cy="80" r="4" fill="#25292c"/>
+  <circle cx="94" cy="80" r="4" fill="#25292c"/>
+  <path d="M75 95c6 4 13 4 19 0M70 105c8 5 20 5 28 0" fill="none" stroke="#25292c" stroke-width="3" stroke-linecap="round"/>
+  <path d="M93 137c-20 10-34 20-44 31M172 137c19 10 32 20 43 31" stroke="#25292c" stroke-width="10" stroke-linecap="round"/>
+  <path d="M124 144v23M154 142v24" stroke="#25292c" stroke-width="8" stroke-linecap="round"/>
+</svg>

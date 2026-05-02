@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="monkey-title">
+  <title id="monkey-title">Playful monkey illustration</title>
+  <rect width="240" height="180" rx="18" fill="#e8f7ff"/>
+  <path d="M0 132c38-10 76-8 112 2 42 12 82 7 128-14v60H0z" fill="#aee779"/>
+  <ellipse cx="133" cy="112" rx="54" ry="34" fill="#8a5632" stroke="#2c2722" stroke-width="5"/>
+  <circle cx="78" cy="82" r="31" fill="#8a5632" stroke="#2c2722" stroke-width="5"/>
+  <circle cx="45" cy="82" r="14" fill="#8a5632" stroke="#2c2722" stroke-width="5"/>
+  <circle cx="111" cy="82" r="14" fill="#8a5632" stroke="#2c2722" stroke-width="5"/>
+  <ellipse cx="78" cy="91" rx="22" ry="18" fill="#f0c79d" stroke="#2c2722" stroke-width="4"/>
+  <circle cx="70" cy="77" r="4" fill="#2c2722"/>
+  <circle cx="88" cy="77" r="4" fill="#2c2722"/>
+  <path d="M73 92c4 3 9 3 13 0M68 101c7 6 17 6 24 0" fill="none" stroke="#2c2722" stroke-width="3" stroke-linecap="round"/>
+  <path d="M184 105c29 12 39-13 20-21 19-9 30-25 19-39" fill="none" stroke="#2c2722" stroke-width="7" stroke-linecap="round"/>
+  <path d="M98 140v23M130 145v22M162 140v23" stroke="#2c2722" stroke-width="8" stroke-linecap="round"/>
+</svg>

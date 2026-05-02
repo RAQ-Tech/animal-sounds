@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="dog-title">
+  <title id="dog-title">Playful dog illustration</title>
+  <rect width="240" height="180" rx="18" fill="#e8f7ff"/>
+  <path d="M0 132c36-11 72-10 110 2 43 13 82 7 130-14v60H0z" fill="#a6df70"/>
+  <ellipse cx="129" cy="109" rx="58" ry="35" fill="#c47a3d" stroke="#2d2a26" stroke-width="5"/>
+  <circle cx="78" cy="83" r="31" fill="#c47a3d" stroke="#2d2a26" stroke-width="5"/>
+  <path d="M53 63c-23-7-31 6-21 25 16 2 28-6 31-21M96 62c22-10 32 2 25 23-15 5-29-3-35-19" fill="#8f512b" stroke="#2d2a26" stroke-width="5" stroke-linejoin="round"/>
+  <circle cx="68" cy="80" r="4" fill="#2d2a26"/>
+  <circle cx="89" cy="80" r="4" fill="#2d2a26"/>
+  <ellipse cx="79" cy="95" rx="16" ry="12" fill="#f2d1b5" stroke="#2d2a26" stroke-width="4"/>
+  <circle cx="79" cy="93" r="4" fill="#2d2a26"/>
+  <path d="M70 102c5 5 13 5 18 0" fill="none" stroke="#2d2a26" stroke-width="3" stroke-linecap="round"/>
+  <path d="M187 102c22-14 28-31 17-45" fill="none" stroke="#2d2a26" stroke-width="7" stroke-linecap="round"/>
+  <path d="M88 137v24M123 142v23M158 137v24" stroke="#2d2a26" stroke-width="8" stroke-linecap="round"/>
+</svg>
