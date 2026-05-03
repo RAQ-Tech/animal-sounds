@@ -66,6 +66,45 @@ body {
   margin-top: 1rem;
 }
 
+.source-toggle {
+  border: 2px solid #25292c;
+  border-radius: 999px;
+  padding: 0.22rem;
+  background: rgba(255, 253, 247, 0.78);
+  box-shadow: 0 8px 18px var(--shadow);
+  display: inline-flex;
+  gap: 0.2rem;
+}
+
+.source-option {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.42rem 0.68rem;
+  background: transparent;
+  color: #31535a;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  line-height: 1;
+  transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.source-option:hover,
+.source-option:focus-visible {
+  background: #fff3b0;
+  color: #16353a;
+}
+
+.source-option:focus-visible {
+  outline: 4px solid rgba(255, 230, 109, 0.82);
+  outline-offset: 3px;
+}
+
+.source-option.is-selected {
+  background: #16353a;
+  color: #fffdf7;
+}
+
 .throw-toggle {
   border: 2px solid #25292c;
   border-radius: 999px;
@@ -170,6 +209,11 @@ body {
   border-color: #ef4444;
   box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.18), 0 16px 28px rgba(217, 72, 47, 0.2);
   animation: target-pop 420ms ease;
+}
+
+.animal-card.has-local-audio .sound-chip {
+  border-color: #2f6f73;
+  background: #d9f99d;
 }
 
 .animal-image-frame {
@@ -320,6 +364,14 @@ code {
 @media (max-width: 520px) {
   .app-shell {
     padding: 1.2rem 0;
+  }
+
+  .source-toggle {
+    width: 100%;
+  }
+
+  .source-option {
+    flex: 1 1 0;
   }
 
   .throw-toggle {

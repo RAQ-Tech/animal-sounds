@@ -1,11 +1,17 @@
 (() => {
   const cards = Array.from(document.querySelectorAll(".animal-card"));
+  const sourceButtons = Array.from(document.querySelectorAll("[data-sound-source]"));
   const throwToggle = document.getElementById("throw-mode-toggle");
   const throwLayer = document.getElementById("pokeball-layer");
   const liveStatus = document.getElementById("sound-status");
+  const SOUND_SOURCE_STORAGE_KEY = "animal-sounds-source";
   let audioContext = null;
   let throwModeActive = false;
   let throwAnimationTimer = null;
+  let soundSourceMode = "generated";
+  let localAudioByAnimal = {};
+  let localAudioIndexes = {};
+  let currentLocalAudio = null;
 
   function getAudioContext() {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -26,6 +32,92 @@
     }
   }
 
+  function isActivationKey(event) {
+    return event.key === "Enter" || event.key === " " || event.key === "Space" || event.key === "Spacebar";
+  }
+
+  function getStoredSoundSourceMode() {
+    try {
+      const storedMode = window.localStorage.getItem(SOUND_SOURCE_STORAGE_KEY);
+      return storedMode === "local" ? "local" : "generated";
+    } catch {
+      return "generated";
+    }
+  }
+
+  function storeSoundSourceMode(mode) {
+    try {
+      window.localStorage.setItem(SOUND_SOURCE_STORAGE_KEY, mode);
+    } catch {
+      // localStorage can be unavailable in hardened browser contexts.
+    }
+  }
+
+  function updateSourceButtons() {
+    sourceButtons.forEach((button) => {
+      const isSelected = button.dataset.soundSource === soundSourceMode;
+      button.classList.toggle("is-selected", isSelected);
+      button.setAttribute("aria-pressed", isSelected ? "true" : "false");
+    });
+  }
+
+  function setSoundSourceMode(mode, options = {}) {
+    soundSourceMode = mode === "local" ? "local" : "generated";
+    updateSourceButtons();
+
+    if (options.persist !== false) {
+      storeSoundSourceMode(soundSourceMode);
+    }
+
+    if (options.announce !== false) {
+      setLiveStatus(
+        soundSourceMode === "local"
+          ? "Local Files mode on. Animal clicks use files from config when available."
+          : "Generated sounds mode on.",
+      );
+    }
+  }
+
+  function localAudioFilesFor(card) {
+    const animalAudio = localAudioByAnimal[card.dataset.animalId];
+    if (!animalAudio || !Array.isArray(animalAudio.files)) {
+      return [];
+    }
+    return animalAudio.files;
+  }
+
+  function updateLocalAudioCardState() {
+    cards.forEach((card) => {
+      const fileCount = localAudioFilesFor(card).length;
+      card.dataset.localAudioCount = String(fileCount);
+      card.classList.toggle("has-local-audio", fileCount > 0);
+    });
+  }
+
+  async function refreshLocalAudioIndex() {
+    try {
+      const response = await fetch("/api/audio", {
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Audio index failed with ${response.status}`);
+      }
+
+      const payload = await response.json();
+      localAudioByAnimal = payload.animals || {};
+      updateLocalAudioCardState();
+    } catch {
+      localAudioByAnimal = {};
+      updateLocalAudioCardState();
+      if (soundSourceMode === "local") {
+        setLiveStatus("Local audio files are unavailable; generated sounds will play.");
+      }
+    }
+  }
+
   function setThrowMode(active) {
     throwModeActive = active;
 
@@ -39,10 +131,6 @@
         ? "Throw mode ready. Choose an animal to throw a Pokeball."
         : "Throw mode off. Animal cards play sounds.",
     );
-  }
-
-  function isActivationKey(event) {
-    return event.key === "Enter" || event.key === " " || event.key === "Space" || event.key === "Spacebar";
   }
 
   function createGain(context, start, duration, peak = 0.25, attack = 0.025, release = 0.08) {
@@ -236,7 +324,17 @@
     },
   };
 
-  async function playAnimal(card) {
+  function stopCurrentLocalAudio() {
+    if (!currentLocalAudio) {
+      return;
+    }
+
+    currentLocalAudio.pause();
+    currentLocalAudio.currentTime = 0;
+    currentLocalAudio = null;
+  }
+
+  async function playGeneratedAnimal(card, statusMessage = null) {
     const patternName = card.dataset.soundPattern;
     const pattern = soundPatterns[patternName];
     const animalName = card.dataset.animalName;
@@ -245,6 +343,8 @@
     if (!pattern) {
       return;
     }
+
+    stopCurrentLocalAudio();
 
     const context = getAudioContext();
     if (context.state === "suspended") {
@@ -256,7 +356,74 @@
     card.classList.add("is-playing");
     window.setTimeout(() => card.classList.remove("is-playing"), duration);
 
-    setLiveStatus(`${animalName} says ${soundLabel}.`);
+    setLiveStatus(statusMessage || `${animalName} says ${soundLabel}.`);
+  }
+
+  async function playLocalAnimal(card, files) {
+    const animalId = card.dataset.animalId;
+    const animalName = card.dataset.animalName;
+    const nextIndex = localAudioIndexes[animalId] || 0;
+    const file = files[nextIndex % files.length];
+    const audio = new Audio(file.url);
+
+    localAudioIndexes = {
+      ...localAudioIndexes,
+      [animalId]: nextIndex + 1,
+    };
+
+    stopCurrentLocalAudio();
+    currentLocalAudio = audio;
+    audio.preload = "auto";
+
+    card.classList.add("is-playing");
+    audio.addEventListener(
+      "ended",
+      () => {
+        if (currentLocalAudio === audio) {
+          currentLocalAudio = null;
+          card.classList.remove("is-playing");
+        }
+      },
+      { once: true },
+    );
+    audio.addEventListener(
+      "error",
+      () => {
+        if (currentLocalAudio === audio) {
+          currentLocalAudio = null;
+          card.classList.remove("is-playing");
+          setLiveStatus(`Local audio file could not play for ${animalName}.`);
+        }
+      },
+      { once: true },
+    );
+
+    await audio.play();
+    setLiveStatus(`Playing local file ${file.name} for ${animalName}.`);
+  }
+
+  async function playAnimal(card) {
+    const animalName = card.dataset.animalName;
+    const soundLabel = card.dataset.soundLabel;
+    let generatedStatusMessage = null;
+
+    if (soundSourceMode === "local") {
+      const localFiles = localAudioFilesFor(card);
+
+      if (localFiles.length > 0) {
+        try {
+          await playLocalAnimal(card, localFiles);
+          return;
+        } catch {
+          card.classList.remove("is-playing");
+          generatedStatusMessage = `Local audio failed for ${animalName}; playing generated ${soundLabel}.`;
+        }
+      } else {
+        generatedStatusMessage = `No local audio files for ${animalName}; playing generated ${soundLabel}.`;
+      }
+    }
+
+    await playGeneratedAnimal(card, generatedStatusMessage);
   }
 
   function clearThrowAnimation() {
@@ -333,6 +500,21 @@
       });
   }
 
+  sourceButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setSoundSourceMode(button.dataset.soundSource);
+    });
+
+    button.addEventListener("keydown", (event) => {
+      if (!isActivationKey(event)) {
+        return;
+      }
+
+      event.preventDefault();
+      setSoundSourceMode(button.dataset.soundSource);
+    });
+  });
+
   if (throwToggle) {
     throwToggle.addEventListener("click", () => {
       setThrowMode(!throwModeActive);
@@ -363,4 +545,7 @@
       activateCard(event);
     });
   });
+
+  setSoundSourceMode(getStoredSoundSourceMode(), { persist: false, announce: false });
+  refreshLocalAudioIndex();
 })();

@@ -6,6 +6,7 @@ Animal Sounds is a lightweight, offline-friendly Flask WebUI for animal pictures
 
 - Shows 14 bundled animal illustrations: cow, horse, sheep, pig, chicken, duck, goat, donkey, dog, cat, lion, monkey, gorilla, and tiger.
 - Plays a distinct generated sound when an animal card is activated.
+- Can switch to local audio files dropped into `/config/audio/<animal-id>/`.
 - Includes a Throw Pokeball mode that launches a local CSS/JS animation at the next selected animal.
 - Uses local HTML, CSS, JavaScript, and SVG assets only.
 - Keeps `/config` reserved as the primary persistent path for future settings and app state.
@@ -47,6 +48,38 @@ Animal Sounds is a lightweight, offline-friendly Flask WebUI for animal pictures
 | `/health` | Container healthcheck endpoint |
 | `/api/info` | App metadata, config path, and animal count |
 | `/api/animals` | Public animal catalog with names, labels, and image URLs |
+| `/api/audio` | Local audio file index and supported extensions |
+| `/config/audio/<animal-id>/<filename>` | Safe local audio file serving for known animals |
+
+## Local Audio Files
+
+The app creates one folder per animal under `/config/audio/`:
+
+```text
+/config/audio/
+├── cat/
+├── chicken/
+├── cow/
+├── dog/
+├── donkey/
+├── duck/
+├── goat/
+├── gorilla/
+├── horse/
+├── lion/
+├── monkey/
+├── pig/
+├── sheep/
+└── tiger/
+```
+
+Drop audio files into the matching animal folder. Supported file types are:
+
+```text
+.mp3 .wav .ogg .m4a .aac .webm
+```
+
+The WebUI starts in **Generated** mode. Switch to **Local Files** mode to play files from `/config/audio`. If an animal has more than one file, repeated clicks cycle through the files in filename order. If an animal has no local files, the generated sound plays as a fallback.
 
 ## Environment Variables
 
@@ -122,6 +155,7 @@ http://<your-unraid-ip>:8080/health
 ## Notes
 
 - Sounds are generated in the browser with the Web Audio API. No audio files or network media are required.
+- Local audio files are user-managed under `/config/audio/<animal-id>/` and are not committed to the repo.
 - Pokeball throwing is animation-only; it does not save capture state or write to `/config`.
 - The app keeps the internal container port fixed at `3000`.
 - `/config` is currently reserved for future settings/state and should remain mapped in Docker/Unraid deployments.
