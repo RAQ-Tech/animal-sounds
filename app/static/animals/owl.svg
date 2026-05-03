@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="owl-title">
+  <title id="owl-title">Playful owl illustration</title>
+  <rect width="240" height="180" rx="18" fill="#ecf6ff"/>
+  <path d="M0 133c38-10 80-8 123 4 43 12 81 5 117-17v60H0z" fill="#a6d982"/>
+  <path d="M74 57c16-25 43-22 49 1 12-24 42-25 57 1 19 32 5 87-53 87-59 0-75-56-53-89z" fill="#8b5e3c" stroke="#2d2925" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M86 58L72 31l36 15M154 46l35-15-13 29" fill="#8b5e3c" stroke="#2d2925" stroke-width="5" stroke-linejoin="round"/>
+  <circle cx="101" cy="84" r="24" fill="#f7e4a7" stroke="#2d2925" stroke-width="5"/>
+  <circle cx="145" cy="84" r="24" fill="#f7e4a7" stroke="#2d2925" stroke-width="5"/>
+  <circle cx="101" cy="84" r="7" fill="#2d2925"/>
+  <circle cx="145" cy="84" r="7" fill="#2d2925"/>
+  <path d="M123 98l-10 15h20z" fill="#f2a33a" stroke="#2d2925" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M96 126c16 9 37 9 54 0" fill="none" stroke="#2d2925" stroke-width="4" stroke-linecap="round"/>
+  <path d="M104 145v20M142 145v20M91 165h25M130 165h25" stroke="#2d2925" stroke-width="7" stroke-linecap="round"/>
+</svg>

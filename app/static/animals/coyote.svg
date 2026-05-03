@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="coyote-title">
+  <title id="coyote-title">Playful coyote illustration</title>
+  <rect width="240" height="180" rx="18" fill="#fff4dc"/>
+  <path d="M0 132c37-10 78-8 120 4 43 12 82 6 120-17v61H0z" fill="#d9bf7d"/>
+  <ellipse cx="134" cy="111" rx="56" ry="33" fill="#b98245" stroke="#2f2924" stroke-width="5"/>
+  <circle cx="80" cy="84" r="31" fill="#c89354" stroke="#2f2924" stroke-width="5"/>
+  <path d="M58 64L43 34l32 15M102 63l21-28 7 35" fill="#c89354" stroke="#2f2924" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M52 89L27 81l24 21z" fill="#f0c27b" stroke="#2f2924" stroke-width="5" stroke-linejoin="round"/>
+  <circle cx="77" cy="80" r="4" fill="#2f2924"/>
+  <circle cx="97" cy="80" r="4" fill="#2f2924"/>
+  <ellipse cx="88" cy="98" rx="16" ry="11" fill="#f4d7a8" stroke="#2f2924" stroke-width="4"/>
+  <path d="M80 104c5 4 12 4 17 0" fill="none" stroke="#2f2924" stroke-width="3" stroke-linecap="round"/>
+  <path d="M184 102c24-19 31-40 21-64" fill="none" stroke="#2f2924" stroke-width="8" stroke-linecap="round"/>
+  <path d="M101 139v24M132 143v23M164 138v25" stroke="#2f2924" stroke-width="8" stroke-linecap="round"/>
+</svg>

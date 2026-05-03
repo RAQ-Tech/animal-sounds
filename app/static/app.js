@@ -322,6 +322,84 @@
       tone(context, start + 0.28, 0.34, 92, 62, { gain: 0.16, type: "square", filterFrequency: 330 });
       return 920;
     },
+
+    "dolphin-click"(context, start) {
+      for (let index = 0; index < 5; index += 1) {
+        const offset = index * 0.075;
+        tone(context, start + offset, 0.026, 2200 + index * 180, 1250, {
+          gain: 0.095,
+          type: "square",
+          attack: 0.003,
+          release: 0.012,
+          filterFrequency: 2800,
+        });
+      }
+      tone(context, start + 0.4, 0.18, 1650, 2400, { gain: 0.07, type: "sine", filterFrequency: 3200 });
+      return 680;
+    },
+
+    "elephant-trumpet"(context, start) {
+      tone(context, start, 0.28, 280, 690, { gain: 0.22, type: "sawtooth", filterFrequency: 1400 });
+      tone(context, start + 0.2, 0.42, 690, 230, { gain: 0.25, type: "sawtooth", filterFrequency: 1200 });
+      noise(context, start + 0.04, 0.52, { gain: 0.045, frequency: 950, q: 2.4 });
+      return 820;
+    },
+
+    "cricket-chirp"(context, start) {
+      for (let group = 0; group < 3; group += 1) {
+        for (let index = 0; index < 3; index += 1) {
+          const offset = group * 0.19 + index * 0.038;
+          tone(context, start + offset, 0.026, 3150, 2600, {
+            gain: 0.06,
+            type: "square",
+            attack: 0.002,
+            release: 0.01,
+            filterFrequency: 3600,
+          });
+        }
+      }
+      return 760;
+    },
+
+    "coyote-howl"(context, start) {
+      tone(context, start, 0.38, 270, 430, { gain: 0.16, type: "sine", filterFrequency: 900 });
+      tone(context, start + 0.32, 0.72, 430, 190, { gain: 0.24, type: "triangle", filterFrequency: 780 });
+      noise(context, start + 0.58, 0.26, { gain: 0.025, frequency: 760, q: 2.1 });
+      return 1220;
+    },
+
+    "rooster-crow"(context, start) {
+      tone(context, start, 0.16, 570, 840, { gain: 0.17, type: "sawtooth", filterFrequency: 1600 });
+      tone(context, start + 0.16, 0.22, 840, 620, { gain: 0.22, type: "sawtooth", filterFrequency: 1500 });
+      tone(context, start + 0.42, 0.36, 720, 390, { gain: 0.24, type: "triangle", filterFrequency: 1250 });
+      noise(context, start + 0.12, 0.26, { gain: 0.03, frequency: 1350, q: 2.5 });
+      return 980;
+    },
+
+    "frog-croak"(context, start) {
+      tone(context, start, 0.22, 170, 118, { gain: 0.24, type: "square", filterFrequency: 420 });
+      noise(context, start, 0.18, { gain: 0.055, frequency: 300, q: 1.8 });
+      tone(context, start + 0.32, 0.3, 150, 95, { gain: 0.28, type: "square", filterFrequency: 360 });
+      noise(context, start + 0.32, 0.24, { gain: 0.06, frequency: 280, q: 1.7 });
+      return 820;
+    },
+
+    "owl-hoot"(context, start) {
+      tone(context, start, 0.34, 310, 210, { gain: 0.2, type: "sine", filterFrequency: 720 });
+      tone(context, start + 0.11, 0.24, 235, 190, { gain: 0.13, type: "triangle", filterFrequency: 560 });
+      tone(context, start + 0.48, 0.44, 280, 170, { gain: 0.24, type: "sine", filterFrequency: 660 });
+      tone(context, start + 0.64, 0.25, 210, 150, { gain: 0.12, type: "triangle", filterFrequency: 520 });
+      return 1120;
+    },
+
+    "seal-bark"(context, start) {
+      tone(context, start, 0.12, 360, 185, { gain: 0.24, type: "square", filterFrequency: 900 });
+      noise(context, start, 0.08, { gain: 0.07, frequency: 980, q: 3.3 });
+      tone(context, start + 0.2, 0.12, 420, 220, { gain: 0.22, type: "square", filterFrequency: 980 });
+      noise(context, start + 0.2, 0.08, { gain: 0.065, frequency: 1100, q: 3.1 });
+      tone(context, start + 0.39, 0.12, 380, 190, { gain: 0.18, type: "square", filterFrequency: 920 });
+      return 660;
+    },
   };
 
   function stopCurrentLocalAudio() {

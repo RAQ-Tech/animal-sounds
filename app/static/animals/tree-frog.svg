@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="tree-frog-title">
+  <title id="tree-frog-title">Playful tree frog illustration</title>
+  <rect width="240" height="180" rx="18" fill="#eaffef"/>
+  <path d="M0 135c38-11 77-9 119 3 43 12 83 5 121-18v60H0z" fill="#8cd56c"/>
+  <ellipse cx="121" cy="110" rx="57" ry="35" fill="#54c45e" stroke="#213527" stroke-width="5"/>
+  <circle cx="83" cy="81" r="26" fill="#66d16c" stroke="#213527" stroke-width="5"/>
+  <circle cx="158" cy="81" r="26" fill="#66d16c" stroke="#213527" stroke-width="5"/>
+  <circle cx="83" cy="80" r="15" fill="#f7fff5" stroke="#213527" stroke-width="4"/>
+  <circle cx="158" cy="80" r="15" fill="#f7fff5" stroke="#213527" stroke-width="4"/>
+  <circle cx="88" cy="80" r="5" fill="#213527"/>
+  <circle cx="153" cy="80" r="5" fill="#213527"/>
+  <path d="M96 113c16 10 33 10 49 0" fill="none" stroke="#213527" stroke-width="5" stroke-linecap="round"/>
+  <path d="M75 126l-26 22M166 126l26 22M101 137l-17 26M139 137l17 26" fill="none" stroke="#213527" stroke-width="8" stroke-linecap="round"/>
+  <path d="M46 149h22M176 149h22M75 164h22M144 164h22" stroke="#f9fff6" stroke-width="5" stroke-linecap="round"/>
+</svg>

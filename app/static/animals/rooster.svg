@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="rooster-title">
+  <title id="rooster-title">Playful rooster illustration</title>
+  <rect width="240" height="180" rx="18" fill="#e9f8ff"/>
+  <path d="M0 136c37-10 76-9 117 3 45 13 85 6 123-16v57H0z" fill="#aee779"/>
+  <ellipse cx="134" cy="113" rx="47" ry="33" fill="#f5f0df" stroke="#2d2a26" stroke-width="5"/>
+  <circle cx="82" cy="78" r="27" fill="#f5f0df" stroke="#2d2a26" stroke-width="5"/>
+  <path d="M70 52c-14-16-3-28 10-15 3-19 22-18 20 2 17-8 27 8 11 20" fill="#e83b35" stroke="#2d2a26" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M56 84L27 74l28 24z" fill="#f6a02d" stroke="#2d2a26" stroke-width="5" stroke-linejoin="round"/>
+  <circle cx="87" cy="74" r="4" fill="#2d2a26"/>
+  <path d="M91 90c9 7 21 8 32 2" fill="none" stroke="#2d2a26" stroke-width="4" stroke-linecap="round"/>
+  <path d="M162 96c21-30 45-33 55-8-18 1-30 10-37 27" fill="#2f86d1" stroke="#2d2a26" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M153 128c18 4 35-3 49-20" fill="none" stroke="#d6427a" stroke-width="9" stroke-linecap="round"/>
+  <path d="M113 143v22M143 144v22" stroke="#2d2a26" stroke-width="7" stroke-linecap="round"/>
+  <path d="M101 165h23M132 166h23" stroke="#f6a02d" stroke-width="6" stroke-linecap="round"/>
+</svg>

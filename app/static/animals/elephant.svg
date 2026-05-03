@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="elephant-title">
+  <title id="elephant-title">Playful elephant illustration</title>
+  <rect width="240" height="180" rx="18" fill="#edf7ff"/>
+  <path d="M0 133c38-11 78-9 121 3 44 12 82 6 119-18v62H0z" fill="#aee779"/>
+  <ellipse cx="134" cy="108" rx="58" ry="38" fill="#99a6b3" stroke="#2f3438" stroke-width="5"/>
+  <circle cx="84" cy="86" r="38" fill="#aab5bf" stroke="#2f3438" stroke-width="5"/>
+  <ellipse cx="58" cy="90" rx="25" ry="31" fill="#b9c3cc" stroke="#2f3438" stroke-width="5"/>
+  <path d="M84 101c1 20 14 30 1 47-8 10-25 6-25-7 0-8 7-11 14-12" fill="none" stroke="#2f3438" stroke-width="10" stroke-linecap="round"/>
+  <path d="M102 102c7 6 17 7 27 2" fill="none" stroke="#2f3438" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="91" cy="79" r="4" fill="#2f3438"/>
+  <path d="M70 107c-10 6-19 6-28 0M103 110c-10 8-21 8-32 0" fill="none" stroke="#f7fbff" stroke-width="3" stroke-linecap="round"/>
+  <path d="M102 143v22M137 146v21M174 139v25" stroke="#2f3438" stroke-width="9" stroke-linecap="round"/>
+</svg>

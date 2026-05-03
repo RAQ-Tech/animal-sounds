@@ -4,7 +4,7 @@ Animal Sounds is a lightweight, offline-friendly Flask WebUI for animal pictures
 
 ## What It Does
 
-- Shows 14 bundled animal illustrations: cow, horse, sheep, pig, chicken, duck, goat, donkey, dog, cat, lion, monkey, gorilla, and tiger.
+- Shows 22 bundled animal illustrations: cow, horse, sheep, pig, chicken, duck, goat, donkey, dog, cat, lion, monkey, gorilla, tiger, dolphin, elephant, cricket, coyote, rooster, tree frog, owl, and seal.
 - Plays a distinct generated sound when an animal card is activated.
 - Can switch to local audio files dropped into `/config/audio/<animal-id>/`.
 - Includes a Throw Pokeball mode that launches a local CSS/JS animation at the next selected animal.
@@ -60,17 +60,25 @@ The app creates one folder per animal under `/config/audio/`:
 ├── cat/
 ├── chicken/
 ├── cow/
+├── coyote/
+├── cricket/
 ├── dog/
+├── dolphin/
 ├── donkey/
 ├── duck/
+├── elephant/
 ├── goat/
 ├── gorilla/
 ├── horse/
 ├── lion/
 ├── monkey/
+├── owl/
 ├── pig/
+├── rooster/
+├── seal/
 ├── sheep/
-└── tiger/
+├── tiger/
+└── tree-frog/
 ```
 
 Drop audio files into the matching animal folder. Supported file types are:
@@ -137,17 +145,25 @@ http://<your-unraid-ip>:8080/health
     │       ├── cat.svg
     │       ├── chicken.svg
     │       ├── cow.svg
+    │       ├── coyote.svg
+    │       ├── cricket.svg
     │       ├── dog.svg
+    │       ├── dolphin.svg
     │       ├── donkey.svg
     │       ├── duck.svg
+    │       ├── elephant.svg
     │       ├── goat.svg
     │       ├── gorilla.svg
     │       ├── horse.svg
     │       ├── lion.svg
     │       ├── monkey.svg
+    │       ├── owl.svg
     │       ├── pig.svg
+    │       ├── rooster.svg
+    │       ├── seal.svg
     │       ├── sheep.svg
-    │       └── tiger.svg
+    │       ├── tiger.svg
+    │       └── tree-frog.svg
     └── templates/
         └── index.html
 ```
