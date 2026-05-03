@@ -27,7 +27,7 @@ body {
 .app-shell {
   width: min(1120px, 94vw);
   margin: 0 auto;
-  padding: 2rem 0;
+  padding: 2rem 0 7.5rem;
   display: grid;
   gap: 1.25rem;
 }
@@ -172,6 +172,7 @@ body {
 }
 
 .animal-card {
+  position: relative;
   min-width: 0;
   min-height: 16rem;
   border: 2px solid var(--border);
@@ -211,12 +212,23 @@ body {
   animation: target-pop 420ms ease;
 }
 
+.animal-card.is-feed-target,
+.animal-card.is-eating {
+  border-color: #8a5a32;
+  box-shadow: 0 0 0 5px rgba(138, 90, 50, 0.18), 0 16px 28px rgba(90, 61, 33, 0.2);
+}
+
+.animal-card.is-eating {
+  animation: eating-card 620ms ease;
+}
+
 .animal-card.has-local-audio .sound-chip {
   border-color: #2f6f73;
   background: #d9f99d;
 }
 
 .animal-image-frame {
+  position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: 8px;
@@ -231,6 +243,66 @@ body {
   height: 100%;
   object-fit: contain;
   user-select: none;
+}
+
+.animal-card.is-eating .animal-image-frame img {
+  animation: animal-chomp 620ms ease;
+  transform-origin: center bottom;
+}
+
+.eating-crumbs {
+  position: absolute;
+  left: 50%;
+  top: 66%;
+  width: 5rem;
+  height: 2.8rem;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.eating-crumb {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.42rem;
+  height: 0.32rem;
+  border: 1px solid #4b2f18;
+  border-radius: 999px;
+  background: #9a6a3a;
+  box-shadow: inset -1px -1px 0 rgba(0, 0, 0, 0.18);
+  transform: translate(-50%, -50%);
+  animation: crumb-pop 560ms ease forwards;
+  animation-delay: var(--crumb-delay);
+}
+
+.eating-crumb:nth-child(1) {
+  --crumb-x: -1.6rem;
+  --crumb-y: -0.65rem;
+  --crumb-delay: 0ms;
+}
+
+.eating-crumb:nth-child(2) {
+  --crumb-x: -0.55rem;
+  --crumb-y: -1.05rem;
+  --crumb-delay: 45ms;
+}
+
+.eating-crumb:nth-child(3) {
+  --crumb-x: 0.55rem;
+  --crumb-y: -0.92rem;
+  --crumb-delay: 80ms;
+}
+
+.eating-crumb:nth-child(4) {
+  --crumb-x: 1.5rem;
+  --crumb-y: -0.45rem;
+  --crumb-delay: 110ms;
+}
+
+.eating-crumb:nth-child(5) {
+  --crumb-x: 0;
+  --crumb-y: -1.45rem;
+  --crumb-delay: 145ms;
 }
 
 .animal-copy {
@@ -323,6 +395,128 @@ code {
   animation: pokeball-throw 900ms cubic-bezier(0.18, 0.78, 0.24, 1) forwards;
 }
 
+.feed-pile {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 35;
+  width: 7rem;
+  min-height: 5.6rem;
+  border: 2px solid #25292c;
+  border-radius: 8px;
+  padding: 0.55rem;
+  background: #fffdf7;
+  box-shadow: 0 16px 30px rgba(31, 66, 71, 0.24);
+  color: #16353a;
+  cursor: grab;
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  touch-action: none;
+  user-select: none;
+}
+
+.feed-pile:active {
+  cursor: grabbing;
+}
+
+.feed-pile:hover,
+.feed-pile:focus-visible,
+.feed-pile.is-armed {
+  border-color: #8a5a32;
+  box-shadow: 0 18px 34px rgba(90, 61, 33, 0.28);
+}
+
+.feed-pile:focus-visible {
+  outline: 4px solid rgba(255, 230, 109, 0.82);
+  outline-offset: 3px;
+}
+
+.feed-pile-label {
+  font-size: 0.86rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.feed-bowl {
+  position: relative;
+  width: 5.75rem;
+  height: 3.55rem;
+  border: 2px solid #25292c;
+  border-radius: 1rem 1rem 2.2rem 2.2rem;
+  background: linear-gradient(to bottom, #ffda8a 0 50%, #c9873a 50% 100%);
+  overflow: hidden;
+}
+
+.feed-bowl::after {
+  content: "";
+  position: absolute;
+  left: 0.55rem;
+  right: 0.55rem;
+  bottom: 0.38rem;
+  height: 0.44rem;
+  border-radius: 999px;
+  background: rgba(75, 47, 24, 0.2);
+}
+
+.feed-pellet,
+.feed-drag-pellet {
+  position: absolute;
+  width: 0.82rem;
+  height: 0.62rem;
+  border: 1px solid #4b2f18;
+  border-radius: 999px;
+  background: #9a6a3a;
+  box-shadow: inset -1px -1px 0 rgba(0, 0, 0, 0.18);
+}
+
+.pellet-one {
+  left: 1.1rem;
+  top: 0.72rem;
+  transform: rotate(16deg);
+}
+
+.pellet-two {
+  left: 2.25rem;
+  top: 0.48rem;
+  transform: rotate(-12deg);
+}
+
+.pellet-three {
+  left: 3.35rem;
+  top: 0.85rem;
+  transform: rotate(25deg);
+}
+
+.pellet-four {
+  left: 1.95rem;
+  top: 1.48rem;
+  transform: rotate(8deg);
+}
+
+.pellet-five {
+  left: 3.02rem;
+  top: 1.52rem;
+  transform: rotate(-18deg);
+}
+
+.feed-drag-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+}
+
+.feed-drag-pellet {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 1.05rem;
+  height: 0.82rem;
+  opacity: 0.95;
+  filter: drop-shadow(0 8px 10px rgba(31, 66, 71, 0.26));
+}
+
 @keyframes pokeball-throw {
   0% {
     opacity: 0;
@@ -349,6 +543,56 @@ code {
   }
 }
 
+@keyframes eating-card {
+  0%,
+  100% {
+    transform: translateY(-4px) scale(1.01);
+  }
+
+  38% {
+    transform: translateY(-6px) scale(1.025);
+  }
+
+  68% {
+    transform: translateY(-2px) scale(0.995);
+  }
+}
+
+@keyframes animal-chomp {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  28% {
+    transform: translateY(4px) scaleY(0.94) scaleX(1.04);
+  }
+
+  54% {
+    transform: translateY(-3px) scaleY(1.03) scaleX(0.98);
+  }
+
+  76% {
+    transform: translateY(2px) scaleY(0.97) scaleX(1.02);
+  }
+}
+
+@keyframes crumb-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+
+  28% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--crumb-x)), calc(-50% + var(--crumb-y))) scale(0.95);
+  }
+}
+
 @keyframes target-pop {
   0% {
     transform: translateY(-4px) scale(1.01);
@@ -365,7 +609,7 @@ code {
 
 @media (max-width: 520px) {
   .app-shell {
-    padding: 1.2rem 0;
+    padding: 1.2rem 0 7rem;
   }
 
   .source-toggle {
@@ -398,5 +642,15 @@ code {
 
   .sound-chip {
     max-width: 100%;
+  }
+
+  .feed-pile {
+    width: 6.4rem;
+    min-height: 5.1rem;
+  }
+
+  .feed-bowl {
+    width: 5.1rem;
+    height: 3.2rem;
   }
 }

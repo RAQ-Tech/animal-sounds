@@ -3,16 +3,26 @@
   const sourceButtons = Array.from(document.querySelectorAll("[data-sound-source]"));
   const throwToggle = document.getElementById("throw-mode-toggle");
   const throwLayer = document.getElementById("pokeball-layer");
+  const feedPile = document.getElementById("feed-pile");
+  const feedDragLayer = document.getElementById("feed-drag-layer");
   const liveStatus = document.getElementById("sound-status");
   const SOUND_SOURCE_STORAGE_KEY = "animal-sounds-source";
   let audioContext = null;
   let throwModeActive = false;
   let throwAnimationTimer = null;
   let activeThrowTarget = null;
+  let feedModeActive = false;
+  let feedDrag = null;
+  let feedTargetCard = null;
+  let suppressFeedClick = false;
   let soundSourceMode = "generated";
   let localAudioByAnimal = {};
+  let globalChompAudio = { count: 0, files: [] };
   let localAudioIndexes = {};
+  let chompAudioIndexes = {};
   let currentLocalAudio = null;
+  let currentChompAudio = null;
+  const eatingTimers = new WeakMap();
 
   function getAudioContext() {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -109,9 +119,11 @@
 
       const payload = await response.json();
       localAudioByAnimal = payload.animals || {};
+      globalChompAudio = payload.effects?.chomp || { count: 0, files: [] };
       updateLocalAudioCardState();
     } catch {
       localAudioByAnimal = {};
+      globalChompAudio = { count: 0, files: [] };
       updateLocalAudioCardState();
       if (soundSourceMode === "local") {
         setLiveStatus("Local audio files are unavailable; generated sounds will play.");
@@ -131,6 +143,21 @@
       active
         ? "Throw mode ready. Choose an animal to throw a Pokeball."
         : "Throw mode off. Animal cards play sounds.",
+    );
+  }
+
+  function setFeedMode(active) {
+    feedModeActive = active;
+
+    if (feedPile) {
+      feedPile.classList.toggle("is-armed", active);
+      feedPile.setAttribute("aria-pressed", active ? "true" : "false");
+    }
+
+    setLiveStatus(
+      active
+        ? "Feed mode ready. Choose an animal to feed."
+        : "Feed mode off.",
     );
   }
 
@@ -413,6 +440,158 @@
     currentLocalAudio = null;
   }
 
+  function stopCurrentChompAudio() {
+    if (!currentChompAudio) {
+      return;
+    }
+
+    currentChompAudio.pause();
+    currentChompAudio.currentTime = 0;
+    currentChompAudio = null;
+  }
+
+  function chompAudioFor(card) {
+    const animalId = card.dataset.animalId;
+    const animalAudio = localAudioByAnimal[animalId];
+    const animalChompFiles = animalAudio?.chomp?.files || [];
+
+    if (animalChompFiles.length > 0) {
+      return {
+        files: animalChompFiles,
+        indexKey: `animal:${animalId}:chomp`,
+      };
+    }
+
+    const globalChompFiles = globalChompAudio.files || [];
+    if (globalChompFiles.length > 0) {
+      return {
+        files: globalChompFiles,
+        indexKey: "global:chomp",
+      };
+    }
+
+    return {
+      files: [],
+      indexKey: "",
+    };
+  }
+
+  async function playLocalChomp(card) {
+    const chompAudio = chompAudioFor(card);
+    if (chompAudio.files.length === 0) {
+      return false;
+    }
+
+    const nextIndex = chompAudioIndexes[chompAudio.indexKey] || 0;
+    const file = chompAudio.files[nextIndex % chompAudio.files.length];
+    const audio = new Audio(file.url);
+
+    chompAudioIndexes = {
+      ...chompAudioIndexes,
+      [chompAudio.indexKey]: nextIndex + 1,
+    };
+
+    stopCurrentChompAudio();
+    stopCurrentLocalAudio();
+    currentChompAudio = audio;
+    audio.preload = "auto";
+    audio.addEventListener(
+      "ended",
+      () => {
+        if (currentChompAudio === audio) {
+          currentChompAudio = null;
+        }
+      },
+      { once: true },
+    );
+    audio.addEventListener(
+      "error",
+      () => {
+        if (currentChompAudio === audio) {
+          currentChompAudio = null;
+        }
+      },
+      { once: true },
+    );
+
+    await audio.play();
+    return true;
+  }
+
+  async function playGeneratedChomp() {
+    stopCurrentChompAudio();
+    stopCurrentLocalAudio();
+
+    const context = getAudioContext();
+    if (context.state === "suspended") {
+      await context.resume();
+    }
+
+    const start = context.currentTime + 0.03;
+    for (let index = 0; index < 3; index += 1) {
+      const offset = index * 0.12;
+      noise(context, start + offset, 0.07, { gain: 0.085, frequency: 520, q: 3.5 });
+      tone(context, start + offset + 0.025, 0.055, 210, 92, {
+        gain: 0.1,
+        type: "square",
+        attack: 0.006,
+        release: 0.018,
+        filterFrequency: 480,
+      });
+    }
+  }
+
+  function showEatingFeedback(card) {
+    const existingTimer = eatingTimers.get(card);
+    if (existingTimer) {
+      window.clearTimeout(existingTimer);
+    }
+
+    card.querySelector(".eating-crumbs")?.remove();
+    card.classList.add("is-eating");
+
+    const frame = card.querySelector(".animal-image-frame");
+    if (frame) {
+      const crumbs = document.createElement("span");
+      crumbs.className = "eating-crumbs";
+
+      for (let index = 0; index < 5; index += 1) {
+        const crumb = document.createElement("span");
+        crumb.className = "eating-crumb";
+        crumbs.append(crumb);
+      }
+
+      frame.append(crumbs);
+    }
+
+    const timer = window.setTimeout(() => {
+      card.classList.remove("is-eating");
+      card.querySelector(".eating-crumbs")?.remove();
+      eatingTimers.delete(card);
+    }, 780);
+    eatingTimers.set(card, timer);
+  }
+
+  async function feedAnimal(card) {
+    const animalName = card.dataset.animalName;
+
+    showEatingFeedback(card);
+    setLiveStatus(`${animalName} is eating.`);
+
+    try {
+      const playedLocalChomp = await playLocalChomp(card);
+      if (!playedLocalChomp) {
+        await playGeneratedChomp();
+      }
+    } catch {
+      try {
+        await playGeneratedChomp();
+      } catch {
+        setLiveStatus("Chomp sound is unavailable in this browser.");
+      }
+    }
+  }
+
   async function playGeneratedAnimal(card, statusMessage = null) {
     const patternName = card.dataset.soundPattern;
     const pattern = soundPatterns[patternName];
@@ -584,9 +763,117 @@
     }, 960);
   }
 
+  function createFeedDragPellet() {
+    const pellet = document.createElement("span");
+    pellet.className = "feed-drag-pellet";
+    return pellet;
+  }
+
+  function cardFromPoint(x, y) {
+    const element = document.elementFromPoint(x, y);
+    return element?.closest?.(".animal-card") || null;
+  }
+
+  function setFeedTarget(card) {
+    if (feedTargetCard === card) {
+      return;
+    }
+
+    if (feedTargetCard) {
+      feedTargetCard.classList.remove("is-feed-target");
+    }
+
+    feedTargetCard = card;
+
+    if (feedTargetCard) {
+      feedTargetCard.classList.add("is-feed-target");
+    }
+  }
+
+  function moveFeedDrag(event) {
+    if (!feedDrag || feedDrag.pointerId !== event.pointerId) {
+      return;
+    }
+
+    feedDrag.pellet.style.transform = `translate(${event.clientX}px, ${event.clientY}px) translate(-50%, -50%)`;
+    setFeedTarget(cardFromPoint(event.clientX, event.clientY));
+  }
+
+  function finishFeedDrag(event) {
+    if (!feedDrag || feedDrag.pointerId !== event.pointerId) {
+      return;
+    }
+
+    moveFeedDrag(event);
+
+    const targetCard = feedTargetCard;
+    feedDrag.pellet.remove();
+    feedDrag = null;
+    setFeedTarget(null);
+
+    if (feedPile?.hasPointerCapture?.(event.pointerId)) {
+      feedPile.releasePointerCapture(event.pointerId);
+    }
+
+    if (targetCard) {
+      feedAnimal(targetCard);
+    } else {
+      setLiveStatus("Feed pellet returned to the pile.");
+    }
+  }
+
+  function cancelFeedDrag(event) {
+    if (!feedDrag || feedDrag.pointerId !== event.pointerId) {
+      return;
+    }
+
+    feedDrag.pellet.remove();
+    feedDrag = null;
+    setFeedTarget(null);
+
+    if (feedPile?.hasPointerCapture?.(event.pointerId)) {
+      feedPile.releasePointerCapture(event.pointerId);
+    }
+  }
+
+  function beginFeedDrag(event) {
+    if (!feedPile || !feedDragLayer) {
+      return;
+    }
+
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+
+    const feedSource = event.target.closest(".feed-pellet, .feed-bowl");
+    if (!feedSource || !feedPile.contains(feedSource)) {
+      return;
+    }
+
+    event.preventDefault();
+    suppressFeedClick = true;
+
+    const dragPellet = createFeedDragPellet();
+    feedDragLayer.append(dragPellet);
+    feedDrag = {
+      pointerId: event.pointerId,
+      pellet: dragPellet,
+    };
+
+    feedPile.setPointerCapture(event.pointerId);
+    moveFeedDrag(event);
+    setLiveStatus("Feed pellet ready. Drop it on an animal.");
+  }
+
   function activateCard(event) {
     const card = event.currentTarget;
     const shouldThrow = throwModeActive;
+
+    if (feedModeActive) {
+      setFeedMode(false);
+      feedAnimal(card);
+      return;
+    }
 
     playAnimal(card)
       .then(() => {
@@ -631,6 +918,36 @@
       if (event.key === "Escape") {
         event.preventDefault();
         setThrowMode(false);
+      }
+    });
+  }
+
+  if (feedPile) {
+    feedPile.addEventListener("pointerdown", beginFeedDrag);
+    feedPile.addEventListener("pointermove", moveFeedDrag);
+    feedPile.addEventListener("pointerup", finishFeedDrag);
+    feedPile.addEventListener("pointercancel", cancelFeedDrag);
+    window.addEventListener("pointermove", moveFeedDrag);
+    window.addEventListener("pointerup", finishFeedDrag);
+    window.addEventListener("pointercancel", cancelFeedDrag);
+
+    feedPile.addEventListener("click", (event) => {
+      if (suppressFeedClick) {
+        event.preventDefault();
+        suppressFeedClick = false;
+      }
+    });
+
+    feedPile.addEventListener("keydown", (event) => {
+      if (isActivationKey(event)) {
+        event.preventDefault();
+        setFeedMode(!feedModeActive);
+        return;
+      }
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setFeedMode(false);
       }
     });
   }

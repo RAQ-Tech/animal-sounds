@@ -21,37 +21,67 @@ def _audio_root() -> Path:
     return Path(CONFIG_PATH) / "audio"
 
 
+def _global_chomp_dir() -> Path:
+    return _audio_root() / "chomp"
+
+
+def _animal_chomp_dir(animal_id: str) -> Path:
+    return _audio_root() / animal_id / "chomp"
+
+
 def _ensure_audio_directories() -> None:
     audio_root = _audio_root()
     audio_root.mkdir(parents=True, exist_ok=True)
+    _global_chomp_dir().mkdir(parents=True, exist_ok=True)
     for animal in ANIMALS:
-        (audio_root / animal["id"]).mkdir(parents=True, exist_ok=True)
+        animal_dir = audio_root / animal["id"]
+        animal_dir.mkdir(parents=True, exist_ok=True)
+        (animal_dir / "chomp").mkdir(parents=True, exist_ok=True)
 
 
 def _is_allowed_audio_file(path: Path) -> bool:
     return path.is_file() and path.suffix.lower() in ALLOWED_AUDIO_EXTENSIONS
 
 
-def _audio_files_for_animal(animal_id: str) -> list[dict[str, str]]:
-    animal_dir = _audio_root() / animal_id
-    if not animal_dir.exists():
+def _is_safe_audio_filename(filename: str) -> bool:
+    return bool(filename) and "/" not in filename and "\\" not in filename and filename not in {".", ".."}
+
+
+def _audio_files_in_dir(directory: Path, endpoint: str, **url_values: str) -> list[dict[str, str]]:
+    if not directory.exists():
         return []
 
     files = []
-    for path in sorted(animal_dir.iterdir(), key=lambda item: item.name.lower()):
+    for path in sorted(directory.iterdir(), key=lambda item: item.name.lower()):
         if not _is_allowed_audio_file(path):
             continue
         files.append(
             {
                 "name": path.name,
                 "url": url_for(
-                    "config_audio_file",
-                    animal_id=animal_id,
+                    endpoint,
                     filename=path.name,
+                    **url_values,
                 ),
             }
         )
     return files
+
+
+def _audio_files_for_animal(animal_id: str) -> list[dict[str, str]]:
+    return _audio_files_in_dir(_audio_root() / animal_id, "config_audio_file", animal_id=animal_id)
+
+
+def _global_chomp_files() -> list[dict[str, str]]:
+    return _audio_files_in_dir(_global_chomp_dir(), "config_chomp_audio_file")
+
+
+def _chomp_files_for_animal(animal_id: str) -> list[dict[str, str]]:
+    return _audio_files_in_dir(
+        _animal_chomp_dir(animal_id),
+        "config_animal_chomp_audio_file",
+        animal_id=animal_id,
+    )
 
 
 def _audio_index() -> dict[str, object]:
@@ -59,13 +89,25 @@ def _audio_index() -> dict[str, object]:
     animals = {}
     for animal in ANIMALS:
         files = _audio_files_for_animal(animal["id"])
+        chomp_files = _chomp_files_for_animal(animal["id"])
         animals[animal["id"]] = {
             "count": len(files),
             "files": files,
+            "chomp": {
+                "count": len(chomp_files),
+                "files": chomp_files,
+            },
         }
+    global_chomp_files = _global_chomp_files()
     return {
         "allowed_extensions": list(ALLOWED_AUDIO_EXTENSIONS),
         "animals": animals,
+        "effects": {
+            "chomp": {
+                "count": len(global_chomp_files),
+                "files": global_chomp_files,
+            },
+        },
     }
 
 
@@ -139,12 +181,46 @@ def api_audio():
     return jsonify(_audio_index())
 
 
-@app.get("/config/audio/<animal_id>/<path:filename>")
+@app.get("/config/audio/chomp/<filename>")
+def config_chomp_audio_file(filename: str):
+    if not _is_safe_audio_filename(filename):
+        abort(404)
+
+    if Path(filename).suffix.lower() not in ALLOWED_AUDIO_EXTENSIONS:
+        abort(404)
+
+    audio_file = _global_chomp_dir() / filename
+    if not _is_allowed_audio_file(audio_file):
+        abort(404)
+
+    return send_from_directory(_global_chomp_dir(), filename, conditional=True)
+
+
+@app.get("/config/audio/<animal_id>/chomp/<filename>")
+def config_animal_chomp_audio_file(animal_id: str, filename: str):
+    if animal_id not in ANIMAL_IDS:
+        abort(404)
+
+    if not _is_safe_audio_filename(filename):
+        abort(404)
+
+    if Path(filename).suffix.lower() not in ALLOWED_AUDIO_EXTENSIONS:
+        abort(404)
+
+    animal_chomp_dir = _animal_chomp_dir(animal_id)
+    audio_file = animal_chomp_dir / filename
+    if not _is_allowed_audio_file(audio_file):
+        abort(404)
+
+    return send_from_directory(animal_chomp_dir, filename, conditional=True)
+
+
+@app.get("/config/audio/<animal_id>/<filename>")
 def config_audio_file(animal_id: str, filename: str):
     if animal_id not in ANIMAL_IDS:
         abort(404)
 
-    if not filename or "/" in filename or "\\" in filename or filename in {".", ".."}:
+    if not _is_safe_audio_filename(filename):
         abort(404)
 
     if Path(filename).suffix.lower() not in ALLOWED_AUDIO_EXTENSIONS:

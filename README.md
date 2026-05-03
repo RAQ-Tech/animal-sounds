@@ -8,6 +8,7 @@ Animal Sounds is a lightweight, offline-friendly Flask WebUI for animal pictures
 - Plays a distinct generated sound when an animal card is activated.
 - Can switch to local audio files dropped into `/config/audio/<animal-id>/`.
 - Includes a Throw Pokeball mode that launches a local CSS/JS animation at the next selected animal.
+- Includes a fixed feed pile with draggable pellets and chomp sounds.
 - Uses local HTML, CSS, JavaScript, and SVG assets only.
 - Keeps `/config` reserved as the primary persistent path for future settings and app state.
 - Provides fast health and catalog API endpoints.
@@ -50,6 +51,8 @@ Animal Sounds is a lightweight, offline-friendly Flask WebUI for animal pictures
 | `/api/animals` | Public animal catalog with names, labels, and image URLs |
 | `/api/audio` | Local audio file index and supported extensions |
 | `/config/audio/<animal-id>/<filename>` | Safe local audio file serving for known animals |
+| `/config/audio/chomp/<filename>` | Safe shared chomp audio file serving |
+| `/config/audio/<animal-id>/chomp/<filename>` | Safe per-animal chomp audio file serving |
 
 ## Local Audio Files
 
@@ -57,6 +60,7 @@ The app creates one folder per animal under `/config/audio/`:
 
 ```text
 /config/audio/
+├── chomp/
 ├── cat/
 ├── chicken/
 ├── cow/
@@ -81,6 +85,14 @@ The app creates one folder per animal under `/config/audio/`:
 └── tree-frog/
 ```
 
+Each animal folder also gets a `chomp/` subfolder for per-animal feeding sounds:
+
+```text
+/config/audio/cow/chomp/
+/config/audio/dog/chomp/
+/config/audio/tree-frog/chomp/
+```
+
 Drop audio files into the matching animal folder. Supported file types are:
 
 ```text
@@ -88,6 +100,8 @@ Drop audio files into the matching animal folder. Supported file types are:
 ```
 
 The WebUI starts in **Generated** mode. Switch to **Local Files** mode to play files from `/config/audio`. If an animal has more than one file, repeated clicks cycle through the files in filename order. If an animal has no local files, the generated sound plays as a fallback.
+
+For feeding, drag a pellet from the fixed feed pile onto an animal. Feeding uses per-animal chomp files first, then shared files from `/config/audio/chomp/`, then a generated chomp fallback. Keyboard users can focus the feed pile, press Enter or Space, then activate an animal card to feed it.
 
 ## Environment Variables
 
@@ -172,6 +186,7 @@ http://<your-unraid-ip>:8080/health
 
 - Sounds are generated in the browser with the Web Audio API. No audio files or network media are required.
 - Local audio files are user-managed under `/config/audio/<animal-id>/` and are not committed to the repo.
+- Chomp audio files are user-managed under `/config/audio/chomp/` and `/config/audio/<animal-id>/chomp/`.
 - Pokeball throwing is animation-only; it does not save capture state or write to `/config`.
 - The app keeps the internal container port fixed at `3000`.
 - `/config` is currently reserved for future settings/state and should remain mapped in Docker/Unraid deployments.
