@@ -326,24 +326,26 @@ code {
 @keyframes pokeball-throw {
   0% {
     opacity: 0;
-    transform: translate(var(--start-x), var(--start-y)) translate(-50%, -50%) scale(0.72) rotate(0deg);
+    transform: translate(var(--start-x), var(--start-y)) translate(-50%, -50%) scale(2.25) rotate(-18deg);
   }
 
-  14% {
+  10% {
     opacity: 1;
+    transform: translate(var(--start-x), var(--start-y)) translate(-50%, -50%) scale(2.12) rotate(70deg);
   }
 
   48% {
-    transform: translate(var(--arc-x), var(--arc-y)) translate(-50%, -50%) scale(1.04) rotate(430deg);
+    transform: translate(var(--arc-x), var(--arc-y)) translate(-50%, -50%) scale(1.15) rotate(430deg);
   }
 
   82% {
-    transform: translate(var(--end-x), var(--end-y)) translate(-50%, -50%) scale(0.92) rotate(790deg);
+    opacity: 1;
+    transform: translate(var(--end-x), var(--end-y)) translate(-50%, -50%) scale(0.55) rotate(790deg);
   }
 
   100% {
     opacity: 0;
-    transform: translate(var(--end-x), var(--end-y)) translate(-50%, -50%) scale(0.35) rotate(880deg);
+    transform: translate(var(--end-x), var(--end-y)) translate(-50%, -50%) scale(0.42) rotate(880deg);
   }
 }
 

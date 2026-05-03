@@ -8,6 +8,7 @@
   let audioContext = null;
   let throwModeActive = false;
   let throwAnimationTimer = null;
+  let activeThrowTarget = null;
   let soundSourceMode = "generated";
   let localAudioByAnimal = {};
   let localAudioIndexes = {};
@@ -510,6 +511,11 @@
       throwAnimationTimer = null;
     }
 
+    if (activeThrowTarget) {
+      activeThrowTarget.classList.remove("is-pokeball-target");
+      activeThrowTarget = null;
+    }
+
     if (throwLayer) {
       throwLayer.replaceChildren();
     }
@@ -522,36 +528,57 @@
     return ball;
   }
 
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
   function throwPokeball(targetCard) {
-    if (!throwLayer || !throwToggle) {
+    if (!throwLayer) {
       return;
     }
 
     clearThrowAnimation();
 
-    const throwRect = throwToggle.getBoundingClientRect();
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
     const targetRect = targetCard.getBoundingClientRect();
-    const startX = throwRect.left + throwRect.width / 2;
-    const startY = throwRect.top + throwRect.height / 2;
     const endX = targetRect.left + targetRect.width / 2;
     const endY = targetRect.top + Math.max(48, targetRect.height * 0.42);
-    const arcY = Math.min(startY, endY) - 110;
+    const perspectiveCenterX = viewportWidth / 2;
+    const targetOffsetX = endX - perspectiveCenterX;
+    const edgePadding = Math.min(96, Math.max(44, viewportWidth * 0.08));
+    const startX = clamp(
+      perspectiveCenterX + targetOffsetX * 0.22,
+      edgePadding,
+      viewportWidth - edgePadding,
+    );
+    const startY = clamp(
+      viewportHeight - clamp(viewportHeight * 0.14, 72, 132),
+      viewportHeight * 0.56,
+      viewportHeight - 44,
+    );
+    const arcX = (startX + endX) / 2 + clamp(targetOffsetX * 0.12, -58, 58);
+    const arcY = clamp(
+      Math.min(startY, endY) - clamp(viewportHeight * 0.2, 92, 184),
+      34,
+      viewportHeight - 80,
+    );
     const animalName = targetCard.dataset.animalName;
     const ball = createPokeball();
 
     ball.style.setProperty("--start-x", `${startX}px`);
     ball.style.setProperty("--start-y", `${startY}px`);
-    ball.style.setProperty("--arc-x", `${(startX + endX) / 2}px`);
+    ball.style.setProperty("--arc-x", `${arcX}px`);
     ball.style.setProperty("--arc-y", `${arcY}px`);
     ball.style.setProperty("--end-x", `${endX}px`);
     ball.style.setProperty("--end-y", `${endY}px`);
 
     throwLayer.append(ball);
     targetCard.classList.add("is-pokeball-target");
+    activeThrowTarget = targetCard;
     setLiveStatus(`Pokeball thrown at ${animalName}.`);
 
     throwAnimationTimer = window.setTimeout(() => {
-      targetCard.classList.remove("is-pokeball-target");
       clearThrowAnimation();
       setLiveStatus(`Pokeball bounced off ${animalName}.`);
     }, 960);
@@ -567,14 +594,10 @@
           return;
         }
 
-        setThrowMode(false);
         throwPokeball(card);
       })
       .catch(() => {
         setLiveStatus("Sound is unavailable in this browser.");
-        if (shouldThrow) {
-          setThrowMode(false);
-        }
       });
   }
 
