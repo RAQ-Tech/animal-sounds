@@ -84,5 +84,10 @@ them as they land.
   `requirements.lock`. Low priority while the dependency list is one line long.
 - [ ] **No structured logging or request logging.** Debugging a misbehaving container
   currently means guessing.
+- [ ] **`docker/setup-buildx-action@v3` still runs on Node.js 20**, which GitHub has
+  deprecated; the runner now forces it onto Node 24 and prints a warning on every build. v3 is
+  the newest release, so there is nothing to bump yet — Dependabot will open a PR once
+  upstream ships a version that targets a supported Node. Nothing to do until then; noted so
+  the recurring warning is not mistaken for a new problem.
 - [ ] **The Unraid template has no test path.** Nothing verifies `unraid/template.xml` still
   matches the ports and environment variables in `docker-compose.yml`.
