@@ -64,8 +64,11 @@ them as they land.
 - [ ] **Static assets have no cache-busting.** `styles.css` and `app.js` are served without a
   version query string, so returning users can get stale files after an update.
 - [ ] **Dependencies are unmanaged.** [app/requirements.txt](app/requirements.txt) pins
-  `Flask==3.1.0` with no lockfile and no Dependabot config, so security updates are manual.
-  (Note: local development machines may have a newer Flask installed than the pin.)
+  `Flask==3.1.0` with no lockfile and no `dependabot.yml`, so nothing opens update PRs.
+  GitHub's vulnerability alerts are active and currently report 2 low-severity findings on
+  `main` (visible under the repo's Security tab). Adding a Dependabot config would turn those
+  alerts into automatic pull requests. (Note: local development machines may have a newer
+  Flask installed than the pin.)
 - [ ] **No structured logging or request logging.** Debugging a misbehaving container
   currently means guessing.
 - [ ] **The Unraid template has no test path.** Nothing verifies `unraid/template.xml` still
