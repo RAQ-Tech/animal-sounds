@@ -6,9 +6,16 @@ them as they land.
 
 ## High — correctness and safety
 
-- [ ] **No automated tests at all.** CI builds and publishes the image without ever running
-  the app. A handful of `pytest` tests using `app.test_client()` would cover the routes in
-  seconds. See the smoke-test snippet in [CLAUDE.md](CLAUDE.md).
+- [x] **CI no longer publishes blind.** The publish workflow now builds the image, starts it,
+  and smoke tests `/health`, `/api/animals`, `/api/info`, `/api/audio` and `/` before the push
+  step runs. A broken image fails the job and never reaches GHCR.
+- [x] **Pull requests are built and tested.** The workflow gained a `pull_request` trigger and
+  runs the same build and smoke test with the push steps skipped, so dependency bumps are
+  verified before merge instead of after.
+- [ ] **Still no unit test suite.** The CI smoke test covers the routes end to end but nothing
+  tests the pieces: the filename validation in the audio routes, the `_audio_files_in_dir`
+  sorting, or the sound-pattern fallbacks. `pytest` with `app.test_client()` would cover these
+  in seconds and run locally without Docker.
 - [ ] **Nothing checks that Python and JavaScript agree on sound patterns.** Every
   `sound_pattern` in [app/animals.py](app/animals.py) must have a matching key in the
   `soundPatterns` object in [app/static/app.js](app/static/app.js), and every animal needs an

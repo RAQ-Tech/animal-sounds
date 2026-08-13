@@ -58,9 +58,15 @@ both depend on it, so never let it get slow or add a dependency to it.
 
 ### CI
 
-[.github/workflows/publish-ghcr.yml](.github/workflows/publish-ghcr.yml) builds the image and
-pushes it to `ghcr.io/raq-tech/animal-sounds` on every push to `main` and on `v*` tags.
-It only builds — it runs no tests, so a broken app will publish successfully.
+[.github/workflows/publish-ghcr.yml](.github/workflows/publish-ghcr.yml) builds the image,
+smoke tests it, and pushes it to `ghcr.io/raq-tech/animal-sounds` on pushes to `main` and on
+`v*` tags. Pull requests run the same build and smoke test but skip the push.
+
+The smoke test is the only automated check in the repo: it starts the built container and
+asserts `/health` reports healthy, `/api/animals` returns 22 animals, `/api/info` and
+`/api/audio` return JSON, and `/` renders animal cards. It runs **before** the push step, so
+an image that fails it never reaches GHCR and the previously published image stays live.
+If you change the animal count, update the assertion there too.
 
 ## Layout
 
