@@ -63,12 +63,18 @@ them as they land.
   or an explicit refresh button would cut the churn.
 - [ ] **Static assets have no cache-busting.** `styles.css` and `app.js` are served without a
   version query string, so returning users can get stale files after an update.
-- [ ] **Dependencies are unmanaged.** [app/requirements.txt](app/requirements.txt) pins
-  `Flask==3.1.0` with no lockfile and no `dependabot.yml`, so nothing opens update PRs.
-  GitHub's vulnerability alerts are active and currently report 2 low-severity findings on
-  `main` (visible under the repo's Security tab). Adding a Dependabot config would turn those
-  alerts into automatic pull requests. (Note: local development machines may have a newer
-  Flask installed than the pin.)
+- [x] **Dependency updates are automated.** [.github/dependabot.yml](.github/dependabot.yml)
+  now watches three things weekly: the pip requirements, the GitHub Actions used by the
+  publish workflow, and the `python:3.12-slim` base image in the Dockerfile. It opens pull
+  requests rather than merging anything, so updates still get reviewed.
+- [x] **The two open Flask advisories are cleared.** Both were low severity and both were
+  fixed in Flask 3.1.3; [app/requirements.txt](app/requirements.txt) is pinned there now.
+  Neither could affect this app in practice — both concern signing session cookies, and the
+  app has no sessions, no cookies, and no secret key.
+- [ ] **Still no lockfile.** The single pin in `requirements.txt` does not capture transitive
+  dependencies (Werkzeug, Jinja2, click, itsdangerous, blinker), so two builds a month apart
+  can ship different code. `pip-tools` or `uv` would produce a fully pinned
+  `requirements.lock`. Low priority while the dependency list is one line long.
 - [ ] **No structured logging or request logging.** Debugging a misbehaving container
   currently means guessing.
 - [ ] **The Unraid template has no test path.** Nothing verifies `unraid/template.xml` still
