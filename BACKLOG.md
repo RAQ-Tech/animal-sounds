@@ -28,62 +28,31 @@ explicitly rather than assuming. Tick items off or delete them as they land.
 
 ---
 
-## Phase 1 — Correctness
+## Phase 1 — Correctness — DONE
 
-Three confirmed defects plus one read-verified risk. None is a security hole; all are
-silent failures, which is why they have gone unnoticed.
+All four items shipped 2026-08-18, each with a regression test.
 
-- [ ] **`/api/audio` returns 500 when `/config` is read-only or full.**
-  `_audio_index()` calls `_ensure_audio_directories()` with no error handling, while the
-  identical call at import time is wrapped in `try/except OSError`. On a read-only volume
-  the whole endpoint dies, so Local Files mode breaks with a server error instead of
-  degrading to generated sounds.
-  *Verified:* patched `Path.mkdir` to raise `OSError(30)`, then requested `/api/audio` —
-  the exception propagated. `/health` correctly survived the same test.
-  *Fix:* wrap the call the same way the import-time one is wrapped. One line.
-
-- [ ] **Local audio files added while the page is open are never seen.**
-  `refreshLocalAudioIndex()` is called exactly once, at the bottom of the IIFE on page
-  load. Switching to Local Files mode does not re-fetch. The documented workflow — drop
-  files into `/config/audio/<id>/`, then switch the UI to Local Files — silently fails
-  unless the user reloads, and the UI reports "No local audio files" instead of explaining
-  why. This quietly undermines the app's main optional feature.
-  *Verified:* searching `app/static/app.js` for `refreshLocalAudioIndex` returns only the
-  definition (line 108) and the load-time call (line 968); `setSoundSourceMode` does not
-  call it.
-  *Fix:* re-fetch the index when switching to Local Files mode, and add a visible refresh
-  control. Small.
-
-- [ ] **`/api/audio` can advertise URLs that are guaranteed to 404.**
-  The index (`_audio_files_in_dir`) filters only on extension, but the serving route
-  rejects any filename containing a backslash. A backslash is a legal filename character
-  on Linux, which is what the container runs, so such a file is listed in the catalog and
-  then 404s when played.
-  *Verified:* simulated a Linux directory listing; `/api/audio` advertised
-  `/config/audio/cow/back%5Cslash.mp3` while `_is_safe_audio_filename` rejected that same
-  name. Twelve other awkward names (spaces, `#`, `%`, `+`, `&`, `;`, quotes, CJK,
-  combining accents, uppercase extensions) all round-trip correctly.
-  *Fix:* apply the same filename check in the indexer that the route already applies, so
-  the two agree. One line, and it removes a whole class of future mismatch.
-
-- [ ] **A symlink inside the audio folder is followed and served.**
-  Werkzeug's `safe_join` blocks `..` in the path string, but `send_from_directory` then
-  calls `os.path.isfile()`, which follows symlinks; there is no containment check on the
-  resolved path. A symlink at `/config/audio/cow/x.mp3` pointing anywhere on the container
-  filesystem would be served.
-  *Verified:* read the installed Werkzeug source for both functions. **Not** verified by
-  execution — Windows would not allow creating the symlink, so this rests on reading the
-  implementation, not on a passing test.
-  *Severity:* low. Only reachable by someone who can already write into the config volume,
-  which on Unraid is the owner. Worth a resolved-path check when the audio routes are next
-  touched.
+- [x] **`/api/audio` no longer 500s on a read-only or full `/config`.**
+  `_ensure_audio_directories()` now handles `OSError` itself, so both call sites are
+  covered, and logs a warning instead of failing silently. Existing files still serve and
+  still list; only the folder creation is skipped.
+- [x] **Local audio files added while the page is open are now picked up.**
+  The index is re-fetched when the user switches to Local Files mode, and again when the
+  tab regains focus. No new UI was needed, and the load-time double fetch is avoided.
+- [x] **The index and the serving routes can no longer disagree.**
+  Both now call a single `_servable_audio_file()` gate, so anything listed is playable and
+  anything playable is listed. This replaces three copies of the same checks that had
+  drifted apart. Covered by a test over seven Linux-legal filenames Windows cannot create.
+- [x] **Symlinks resolving outside their directory are rejected**, by both the routes and
+  the index. Verified on Linux in CI — these two tests skip on Windows, so a green local
+  run does not prove them.
 
 ---
 
 ## Phase 2 — Production hardening
 
 - [ ] **The container serves production traffic from Flask's development server.**
-  `app/main.py` ends in `app.run(...)` (line 238), which Flask itself warns is not for
+  `app/main.py` ends in `app.run(...)` (line 258), which Flask itself warns is not for
   production: it is not built for concurrency or hostile input.
   *Fix:* add `waitress` (pure Python, no compiler needed) and change the Dockerfile `CMD`.
   Keep `app.run` behind `__main__` for local development. ~5 lines.
@@ -105,19 +74,15 @@ silent failures, which is why they have gone unnoticed.
 
 ---
 
-## Phase 3 — Tests
+## Phase 3 — Tests — DONE
 
-- [ ] **Add the pytest suite.** A 25-test suite was written and run green during the
-  2026-08-18 audit but not committed, since it belongs with a decision about test layout.
-  It covers catalog integrity (unique ids, every animal has an SVG, no orphan SVGs), the
-  Python-to-JavaScript `sound_pattern` contract, every route's shape, audio serving, and
-  nine path-traversal attacks. It runs in 0.4 seconds and needs no Docker.
-  The two highest-value tests are the ones no person will remember to run by hand:
-  - the `sound_pattern` contract, which is the four-file trap documented in CLAUDE.md and
-    is currently enforced only by convention;
-  - index/route agreement, which is what caught the backslash defect above.
-- [ ] **Run the suite in CI** alongside the container smoke test, so unit failures are
-  caught before the slower image build.
+- [x] **pytest suite added** under `tests/`: 41 tests covering catalog integrity, the
+  Python-to-JavaScript `sound_pattern` contract, every route's shape, audio serving, nine
+  path-traversal attacks, symlink containment, and resilience to an unwritable `/config`.
+  Runs in about a quarter of a second with no Docker, and writes nothing outside a temp
+  directory.
+- [x] **CI runs the suite** before the image build, so unit failures fail fast and the two
+  Linux-only symlink tests actually execute.
 
 ---
 

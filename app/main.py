@@ -30,13 +30,21 @@ def _animal_chomp_dir(animal_id: str) -> Path:
 
 
 def _ensure_audio_directories() -> None:
-    audio_root = _audio_root()
-    audio_root.mkdir(parents=True, exist_ok=True)
-    _global_chomp_dir().mkdir(parents=True, exist_ok=True)
-    for animal in ANIMALS:
-        animal_dir = audio_root / animal["id"]
-        animal_dir.mkdir(parents=True, exist_ok=True)
-        (animal_dir / "chomp").mkdir(parents=True, exist_ok=True)
+    """Create the per-animal audio folders.
+
+    Tolerates a read-only or full volume: the app can still serve whatever
+    already exists, so a bad mount must not take down /api/audio.
+    """
+    try:
+        audio_root = _audio_root()
+        audio_root.mkdir(parents=True, exist_ok=True)
+        _global_chomp_dir().mkdir(parents=True, exist_ok=True)
+        for animal in ANIMALS:
+            animal_dir = audio_root / animal["id"]
+            animal_dir.mkdir(parents=True, exist_ok=True)
+            (animal_dir / "chomp").mkdir(parents=True, exist_ok=True)
+    except OSError as error:
+        app.logger.warning("Could not create audio directories under %s: %s", _audio_root(), error)
 
 
 def _is_allowed_audio_file(path: Path) -> bool:
@@ -47,13 +55,48 @@ def _is_safe_audio_filename(filename: str) -> bool:
     return bool(filename) and "/" not in filename and "\\" not in filename and filename not in {".", ".."}
 
 
+def _servable_audio_file(directory: Path, filename: str) -> Path | None:
+    """Return the path only if it is safe to serve from ``directory``.
+
+    This is the single gate used by both the audio index and the serving
+    routes, so the two cannot disagree about a file: anything listed is
+    fetchable, and anything fetchable is listed.
+
+    Rejects unsafe filenames, disallowed extensions, non-files, and symlinks
+    resolving outside ``directory`` -- send_from_directory blocks ".." in the
+    URL but still follows links on disk.
+    """
+    if not _is_safe_audio_filename(filename):
+        return None
+
+    if Path(filename).suffix.lower() not in ALLOWED_AUDIO_EXTENSIONS:
+        return None
+
+    candidate = directory / filename
+    if not _is_allowed_audio_file(candidate):
+        return None
+
+    try:
+        if not candidate.resolve(strict=True).is_relative_to(directory.resolve(strict=True)):
+            return None
+    except OSError:
+        return None
+
+    return candidate
+
+
 def _audio_files_in_dir(directory: Path, endpoint: str, **url_values: str) -> list[dict[str, str]]:
     if not directory.exists():
         return []
 
+    try:
+        entries = sorted(directory.iterdir(), key=lambda item: item.name.lower())
+    except OSError:
+        return []
+
     files = []
-    for path in sorted(directory.iterdir(), key=lambda item: item.name.lower()):
-        if not _is_allowed_audio_file(path):
+    for path in entries:
+        if _servable_audio_file(directory, path.name) is None:
             continue
         files.append(
             {
@@ -111,10 +154,7 @@ def _audio_index() -> dict[str, object]:
     }
 
 
-try:
-    _ensure_audio_directories()
-except OSError:
-    pass
+_ensure_audio_directories()
 
 
 def _animal_payload(include_sound_pattern: bool = False) -> list[dict[str, str]]:
@@ -183,17 +223,11 @@ def api_audio():
 
 @app.get("/config/audio/chomp/<filename>")
 def config_chomp_audio_file(filename: str):
-    if not _is_safe_audio_filename(filename):
+    chomp_dir = _global_chomp_dir()
+    if _servable_audio_file(chomp_dir, filename) is None:
         abort(404)
 
-    if Path(filename).suffix.lower() not in ALLOWED_AUDIO_EXTENSIONS:
-        abort(404)
-
-    audio_file = _global_chomp_dir() / filename
-    if not _is_allowed_audio_file(audio_file):
-        abort(404)
-
-    return send_from_directory(_global_chomp_dir(), filename, conditional=True)
+    return send_from_directory(chomp_dir, filename, conditional=True)
 
 
 @app.get("/config/audio/<animal_id>/chomp/<filename>")
@@ -201,15 +235,8 @@ def config_animal_chomp_audio_file(animal_id: str, filename: str):
     if animal_id not in ANIMAL_IDS:
         abort(404)
 
-    if not _is_safe_audio_filename(filename):
-        abort(404)
-
-    if Path(filename).suffix.lower() not in ALLOWED_AUDIO_EXTENSIONS:
-        abort(404)
-
     animal_chomp_dir = _animal_chomp_dir(animal_id)
-    audio_file = animal_chomp_dir / filename
-    if not _is_allowed_audio_file(audio_file):
+    if _servable_audio_file(animal_chomp_dir, filename) is None:
         abort(404)
 
     return send_from_directory(animal_chomp_dir, filename, conditional=True)
@@ -220,15 +247,8 @@ def config_audio_file(animal_id: str, filename: str):
     if animal_id not in ANIMAL_IDS:
         abort(404)
 
-    if not _is_safe_audio_filename(filename):
-        abort(404)
-
-    if Path(filename).suffix.lower() not in ALLOWED_AUDIO_EXTENSIONS:
-        abort(404)
-
     animal_dir = _audio_root() / animal_id
-    audio_file = animal_dir / filename
-    if not _is_allowed_audio_file(audio_file):
+    if _servable_audio_file(animal_dir, filename) is None:
         abort(404)
 
     return send_from_directory(animal_dir, filename, conditional=True)

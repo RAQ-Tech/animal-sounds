@@ -46,20 +46,32 @@ container: the default is the absolute path `/config`, which on Windows resolves
 
 ### Tests
 
-There is no test suite, no linter, and no formatter configured. Verification is a smoke
-test. This snippet exercises every route without binding a port:
+`pytest` covers the catalog, the routes, and audio serving:
 
 ```bash
-cd app && CONFIG_PATH=../config python -c "import main; c=main.app.test_client(); [print(r, c.get(r).status_code) for r in ['/','/health','/api/info','/api/animals','/api/audio']]"
+pip install -r app/requirements.txt -r app/requirements-dev.txt
 ```
+
+```bash
+python -m pytest tests -q
+```
+
+It runs in well under a second, needs no Docker, and writes nothing outside a temp
+directory — `tests/conftest.py` repoints `CONFIG_PATH` before importing the app, which
+also keeps a Windows run from creating `C:\config`.
+
+Two symlink tests skip on Windows and execute only on Linux, so CI is where they are
+actually proven. A green local run is not proof those two passed.
+
+There is no linter or formatter configured.
 
 `/health` must return `200` with `"status": "healthy"` — the Docker and Unraid healthchecks
 both depend on it, so never let it get slow or add a dependency to it.
 
 ### CI
 
-[.github/workflows/publish-ghcr.yml](.github/workflows/publish-ghcr.yml) builds the image,
-smoke tests it, and pushes it to `ghcr.io/raq-tech/animal-sounds` on pushes to `main` and on
+[.github/workflows/publish-ghcr.yml](.github/workflows/publish-ghcr.yml) runs the unit
+tests, builds the image, smoke tests it, and pushes it to `ghcr.io/raq-tech/animal-sounds` on pushes to `main` and on
 `v*` tags. Pull requests run the same build and smoke test but skip the push.
 
 The smoke test is the only automated check in the repo: it starts the built container and
@@ -72,7 +84,7 @@ If you change the animal count, update the assertion there too.
 
 | Path | Responsibility |
 |---|---|
-| [app/main.py](app/main.py) | All Flask routes, env config, audio-file discovery and safe serving. ~240 lines. |
+| [app/main.py](app/main.py) | All Flask routes, env config, audio-file discovery and safe serving. ~260 lines. |
 | [app/animals.py](app/animals.py) | The `ANIMALS` tuple — the single source of truth for the catalog. |
 | [app/templates/index.html](app/templates/index.html) | Server-renders one `<button class="animal-card">` per animal, with sound data in `data-*` attributes. |
 | [app/static/app.js](app/static/app.js) | Everything interactive: sound synthesis, local-file playback, throw mode, feed drag. One big IIFE, ~970 lines. |
@@ -98,9 +110,14 @@ and the card renders but stays silent, or shows a broken image:
 The `/config/audio/<id>/` folders are created automatically at import and on every
 `/api/audio` request, so no filesystem edit is needed.
 
-**The audio routes are the only place user input touches the filesystem.** They reject
-unknown animal IDs, filenames containing slashes or `..`, and extensions outside
-`ALLOWED_AUDIO_EXTENSIONS`. Keep all three checks if you refactor those routes.
+**The audio routes are the only place user input touches the filesystem.** Every check
+lives in one helper, `_servable_audio_file()`, called by the serving routes *and* by the
+`/api/audio` index. It rejects unsafe filenames, disallowed extensions, non-files, and
+symlinks resolving outside their directory. Route decisions through that helper instead of
+re-implementing them: the index and the routes sharing a single gate is what guarantees
+anything listed is playable and anything playable is listed. They disagreed once, and the
+result was a catalog full of URLs that 404. Unknown animal IDs are still checked
+separately in each route.
 
 **Sound falls back rather than failing.** Animal sounds: local file → generated tone. Chomp
 sounds: `/config/audio/<id>/chomp/` → `/config/audio/chomp/` → generated. Every failure path

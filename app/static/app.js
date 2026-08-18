@@ -80,6 +80,13 @@
       storeSoundSourceMode(soundSourceMode);
     }
 
+    // Files can be added to /config while this page is open. The index is only
+    // fetched at load, so re-read it whenever the user opts into local files;
+    // otherwise their new files look missing until they reload.
+    if (soundSourceMode === "local" && options.refresh !== false) {
+      refreshLocalAudioIndex();
+    }
+
     if (options.announce !== false) {
       setLiveStatus(
         soundSourceMode === "local"
@@ -964,6 +971,17 @@
     });
   });
 
-  setSoundSourceMode(getStoredSoundSourceMode(), { persist: false, announce: false });
+  // Coming back to the tab is the other moment files may have changed.
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && soundSourceMode === "local") {
+      refreshLocalAudioIndex();
+    }
+  });
+
+  setSoundSourceMode(getStoredSoundSourceMode(), {
+    persist: false,
+    announce: false,
+    refresh: false,
+  });
   refreshLocalAudioIndex();
 })();

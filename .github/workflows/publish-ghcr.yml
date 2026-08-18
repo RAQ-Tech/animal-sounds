@@ -19,6 +19,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      # Unit tests first: they run in under a second and fail fast, whereas the
+      # image build takes ~30s. Some tests (symlink containment) can only run on
+      # Linux, so this is the only place they actually execute.
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Install test dependencies
+        run: pip install -r app/requirements.txt -r app/requirements-dev.txt
+
+      - name: Run unit tests
+        run: python -m pytest tests -q
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
