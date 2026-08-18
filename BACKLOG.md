@@ -49,28 +49,29 @@ All four items shipped 2026-08-18, each with a regression test.
 
 ---
 
-## Phase 2 — Production hardening
+## Phase 2 — Production hardening — 3 of 4 done
 
-- [ ] **The container serves production traffic from Flask's development server.**
-  `app/main.py` ends in `app.run(...)` (line 258), which Flask itself warns is not for
-  production: it is not built for concurrency or hostile input.
-  *Fix:* add `waitress` (pure Python, no compiler needed) and change the Dockerfile `CMD`.
-  Keep `app.run` behind `__main__` for local development. ~5 lines.
+- [x] **The container no longer runs Flask's development server.** It serves with
+  `waitress` (pure Python, no compiler, works on Windows too). `app.run()` stays under
+  `__main__` for local development. Waitress declares support only up to Python 3.13 while
+  the image is on 3.14, so this was not taken on trust: the app was run under waitress on
+  Python 3.14.6 and all five routes returned 200 before the change was committed.
+- [x] **`LOG_LEVEL` does something.** `_configure_logging()` applies it at import and
+  returns the level actually in effect, which is what `/api/info` now reports rather than
+  echoing back a value that may not have been understood. An unrecognised value falls back
+  to `info` with a warning instead of refusing to start. Verified end to end: at `info` the
+  access log shows each request, at `warning` those lines disappear.
+- [x] **The app has access logging**, which it previously had none of. `/health` is
+  excluded — the container healthcheck hits it every 30 seconds and would bury everything
+  else.
+- [x] **The duplicated healthcheck is gone.** One copy now, in the Dockerfile, so it
+  applies wherever the image runs including Unraid.
 
-- [ ] **The container runs as root.** No `USER` directive in the Dockerfile, so the app and
-  everything it writes into `/config` run as UID 0 — the usual cause of Unraid appdata
-  permission surprises.
-  *Fix:* create a non-root user and adjust ownership of `/config`. Changes ownership on an
-  existing appdata share, so this one needs confirming before it ships.
-
-- [ ] **`LOG_LEVEL` does nothing.** It is read, shown in the UI and returned by
-  `/api/info`, but never passed to `logging`. Setting it to `debug` changes nothing.
-  *Verified:* the three references in `app/main.py` are all display-only.
-  *Fix:* wire it to `logging.basicConfig`, or stop advertising it. Wiring it up also gives
-  the app real request logging, which it has none of today.
-
-- [ ] **The healthcheck is duplicated** in [Dockerfile](Dockerfile) and
-  [docker-compose.yml](docker-compose.yml) with identical commands. They will drift.
+- [ ] **The container still runs as root.** No `USER` directive, so the app and everything
+  it writes into `/config` run as UID 0 — the usual cause of Unraid appdata permission
+  surprises. Held back deliberately: changing the user changes ownership expectations for
+  an appdata share that already exists, which can break a running deployment. See Open
+  questions.
 
 ---
 

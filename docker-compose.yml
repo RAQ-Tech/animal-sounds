@@ -13,10 +13,7 @@ services:
       CONFIG_PATH: /config
     volumes:
       - ./config:/config
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3000/health', timeout=3).read()"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
+    # No healthcheck here on purpose: the image defines one in the Dockerfile,
+    # so it applies wherever the image runs, including Unraid. Two copies of the
+    # same command only drift apart.
     restart: unless-stopped

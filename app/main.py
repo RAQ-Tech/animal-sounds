@@ -1,8 +1,9 @@
+import logging
 import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-from flask import Flask, abort, jsonify, render_template, send_from_directory, url_for
+from flask import Flask, abort, jsonify, render_template, request, send_from_directory, url_for
 
 from animals import ANIMALS
 
@@ -13,8 +14,57 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", "info")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/config")
 ALLOWED_AUDIO_EXTENSIONS = (".aac", ".m4a", ".mp3", ".ogg", ".wav", ".webm")
 
+LOG_LEVELS = {
+    "critical": logging.CRITICAL,
+    "error": logging.ERROR,
+    "warning": logging.WARNING,
+    "info": logging.INFO,
+    "debug": logging.DEBUG,
+}
+
 app = Flask(__name__, static_folder="static", template_folder="templates")
 ANIMAL_IDS = {animal["id"] for animal in ANIMALS}
+
+
+def _configure_logging() -> str:
+    """Apply LOG_LEVEL to the root logger; return the level actually in effect.
+
+    An unrecognised value falls back to info rather than failing to start, and
+    the effective level is what gets reported by /api/info -- reporting the
+    requested value would be a lie when it was not understood.
+    """
+    requested = LOG_LEVEL.strip().lower()
+    level = LOG_LEVELS.get(requested)
+    logging.basicConfig(
+        level=level if level is not None else logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
+
+    if level is None:
+        app.logger.warning(
+            "Unknown LOG_LEVEL %r; expected one of %s. Falling back to info.",
+            LOG_LEVEL,
+            ", ".join(sorted(LOG_LEVELS)),
+        )
+        return "info"
+
+    app.logger.setLevel(level)
+    return requested
+
+
+EFFECTIVE_LOG_LEVEL = _configure_logging()
+
+
+@app.after_request
+def _log_request(response):
+    """Basic access logging; the app had none.
+
+    /health is skipped: the container healthcheck hits it every 30 seconds and
+    would drown out everything worth reading.
+    """
+    if request.path != "/health":
+        app.logger.info("%s %s -> %s", request.method, request.path, response.status_code)
+    return response
 
 
 def _audio_root() -> Path:
@@ -178,7 +228,7 @@ def home():
         "index.html",
         app_name=APP_NAME,
         app_env=APP_ENV,
-        log_level=LOG_LEVEL,
+        log_level=EFFECTIVE_LOG_LEVEL,
         config_path=CONFIG_PATH,
         animals=_animal_payload(include_sound_pattern=True),
     )
@@ -201,7 +251,7 @@ def api_info():
         {
             "app_name": APP_NAME,
             "environment": APP_ENV,
-            "log_level": LOG_LEVEL,
+            "log_level": EFFECTIVE_LOG_LEVEL,
             "description": "Offline-friendly animal picture and sound WebUI.",
             "animal_count": len(ANIMALS),
             "paths": {

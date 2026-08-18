@@ -30,7 +30,11 @@ gitignored. Copy `.env.example` to `.env` first if you want to change ports or n
 
 ### Fast local loop — plain Python (no Docker)
 
-Useful when Docker Desktop isn't running. Flask is the only dependency.
+Useful when Docker Desktop isn't running.
+
+The container serves with **waitress**, not `app.run()` — Flask's development server is not
+built for production traffic. `main.py` keeps `app.run()` under `__main__`, so the loop
+below is still the quickest way to iterate locally; it is just not what ships.
 
 ```bash
 pip install -r app/requirements.txt
@@ -128,12 +132,22 @@ pattern when adding audio features.
 itself); otherwise the sound plays and, if throw mode is armed, the Pokeball animation runs
 after it. Throw mode stays armed across clicks by design; feed mode does not.
 
-**Port 3000 is fixed** inside the container, in the Dockerfile, in `app.run()`, in the
-healthchecks, and in the Unraid template. Change it in one place and deployments break.
+**Port 3000 is fixed** inside the container, in the Dockerfile `CMD` and `EXPOSE`, in
+`app.run()`, in the healthcheck, and in the Unraid template. Change it in one place and
+deployments break.
+
+**The healthcheck lives only in the Dockerfile.** It used to be duplicated in
+`docker-compose.yml`; there is now one copy, so it applies wherever the image runs. Do not
+add a second one to compose.
+
+**`LOG_LEVEL` is wired to real logging.** `_configure_logging()` applies it at import and
+returns the level actually in effect, which is what `/api/info` reports — an unrecognised
+value falls back to `info` with a warning rather than refusing to start. Requests are
+access logged, except `/health`, which the container healthcheck hits every 30 seconds.
 
 ## Conventions
 
-- Python: standard library plus Flask only, no ORM, no blueprints. Private helpers are
+- Python: standard library, Flask and waitress only. No ORM, no blueprints. Private helpers are
   prefixed with `_`. Type hints on function signatures.
 - JavaScript: no framework, no build step, no `npm`. Everything lives inside the single IIFE
   in `app.js`; `const`/`let`, optional chaining, and `async`/`await` are used freely.
