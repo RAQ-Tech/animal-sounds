@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="narwhal-title">
+  <title id="narwhal-title">Playful narwhal illustration</title>
+  <rect width="240" height="180" rx="18" fill="#def5ff"/>
+  <path d="M0 124c39-12 78-9 119 4 42 14 83 9 121-13v65H0z" fill="#78cce8"/>
+  <path d="M50 110c14-34 53-51 92-40 32 9 52 33 44 55-9 26-49 37-88 26-38-11-59-19-48-41z" fill="#7898cf" stroke="#27334a" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M57 116L24 96l13 39z" fill="#7898cf" stroke="#27334a" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M116 76l-3-29 25 25M116 147l-9 23 34-18" fill="#7898cf" stroke="#27334a" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M176 87l48-58-33 68" fill="#f4e6bd" stroke="#27334a" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M200 59l10 5M190 73l11 6" stroke="#cf9d62" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="163" cy="100" r="4" fill="#27334a"/>
+  <path d="M166 116c7 5 15 5 22 0" fill="none" stroke="#27334a" stroke-width="4" stroke-linecap="round"/>
+  <path d="M83 128c24 10 54 11 78 1" fill="none" stroke="#b7cdf0" stroke-width="7" stroke-linecap="round"/>
+  <path d="M26 151c13-7 27-7 41 0M155 160c14-7 29-7 43 0" fill="none" stroke="#eafaff" stroke-width="5" stroke-linecap="round"/>
+</svg>

@@ -435,6 +435,51 @@
       tone(context, start + 0.39, 0.12, 380, 190, { gain: 0.18, type: "square", filterFrequency: 920 });
       return 660;
     },
+
+    "roadrunner-coo"(context, start) {
+      for (let index = 0; index < 5; index += 1) {
+        const offset = index * 0.16;
+        tone(context, start + offset, 0.13, 340 - index * 18, 245 - index * 12, {
+          gain: 0.16,
+          type: "sine",
+          attack: 0.012,
+          release: 0.055,
+          filterFrequency: 720,
+        });
+      }
+      return 980;
+    },
+
+    "toucan-croak"(context, start) {
+      for (let index = 0; index < 3; index += 1) {
+        const offset = index * 0.2;
+        tone(context, start + offset, 0.14, 285, 155, {
+          gain: 0.2,
+          type: "square",
+          attack: 0.008,
+          release: 0.05,
+          filterFrequency: 680,
+        });
+        noise(context, start + offset, 0.11, { gain: 0.045, frequency: 610, q: 2.8 });
+      }
+      return 760;
+    },
+
+    "narwhal-whistle"(context, start) {
+      tone(context, start, 0.32, 1180, 2050, { gain: 0.1, type: "sine", filterFrequency: 2800 });
+      tone(context, start + 0.28, 0.34, 1980, 1320, { gain: 0.09, type: "sine", filterFrequency: 2600 });
+      for (let index = 0; index < 4; index += 1) {
+        const offset = 0.12 + index * 0.1;
+        tone(context, start + offset, 0.022, 2450, 1500, {
+          gain: 0.055,
+          type: "square",
+          attack: 0.002,
+          release: 0.009,
+          filterFrequency: 3200,
+        });
+      }
+      return 840;
+    },
   };
 
   function stopCurrentLocalAudio() {

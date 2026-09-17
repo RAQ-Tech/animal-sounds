@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="toucan-title">
+  <title id="toucan-title">Playful toucan illustration</title>
+  <rect width="240" height="180" rx="18" fill="#ddf6ef"/>
+  <path d="M0 132c38-11 79-9 121 4 43 13 83 6 119-17v61H0z" fill="#86cf82"/>
+  <path d="M26 142c52-7 105-3 166 13" fill="none" stroke="#6a4933" stroke-width="10" stroke-linecap="round"/>
+  <path d="M85 68c20-26 54-26 73-4 20 23 13 64-17 77-30 13-66-5-70-35-2-14 3-28 14-38z" fill="#24282d" stroke="#24282d" stroke-width="5"/>
+  <path d="M93 66c11-13 27-18 43-13 12 4 20 12 25 23-20 4-39 16-51 34-13-8-22-25-17-44z" fill="#f7e7ad"/>
+  <path d="M137 56c20-20 55-20 83-2-13 28-43 39-82 27-9-3-10-16-1-25z" fill="#f0a62f" stroke="#24282d" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M145 59c21-8 44-8 64 1-16 8-35 13-57 13" fill="#ef5d45"/>
+  <path d="M211 57l9-3-5 9" fill="#56aabc"/>
+  <circle cx="140" cy="53" r="8" fill="#5eb4c4" stroke="#24282d" stroke-width="4"/>
+  <circle cx="140" cy="53" r="3" fill="#24282d"/>
+  <path d="M94 133l-5 20M126 141l4 16M78 154h22M119 158h22" fill="none" stroke="#d78b42" stroke-width="6" stroke-linecap="round"/>
+  <path d="M77 98L49 85l24 32" fill="#24282d" stroke="#24282d" stroke-width="5" stroke-linejoin="round"/>
+</svg>

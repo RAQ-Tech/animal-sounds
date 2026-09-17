@@ -153,4 +153,25 @@ ANIMALS = (
         "image_path": "animals/seal.svg",
         "sound_pattern": "seal-bark",
     },
+    {
+        "id": "roadrunner",
+        "name": "Roadrunner",
+        "sound_label": "Coo",
+        "image_path": "animals/roadrunner.svg",
+        "sound_pattern": "roadrunner-coo",
+    },
+    {
+        "id": "toucan",
+        "name": "Toucan",
+        "sound_label": "Croak",
+        "image_path": "animals/toucan.svg",
+        "sound_pattern": "toucan-croak",
+    },
+    {
+        "id": "narwhal",
+        "name": "Narwhal",
+        "sound_label": "Whistle",
+        "image_path": "animals/narwhal.svg",
+        "sound_pattern": "narwhal-whistle",
+    },
 )

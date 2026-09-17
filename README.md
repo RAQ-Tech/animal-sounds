@@ -4,7 +4,7 @@ Animal Sounds is a lightweight, offline-friendly Flask WebUI for animal pictures
 
 ## What It Does
 
-- Shows 22 bundled animal illustrations: cow, horse, sheep, pig, chicken, duck, goat, donkey, dog, cat, lion, monkey, gorilla, tiger, dolphin, elephant, cricket, coyote, rooster, tree frog, owl, and seal.
+- Shows 25 bundled animal illustrations: cow, horse, sheep, pig, chicken, duck, goat, donkey, dog, cat, lion, monkey, gorilla, tiger, dolphin, elephant, cricket, coyote, rooster, tree frog, owl, seal, roadrunner, toucan, and narwhal.
 - Plays a distinct generated sound when an animal card is activated.
 - Can switch to local audio files dropped into `/config/audio/<animal-id>/`.
 - Includes a Throw Pokeball mode that launches a local CSS/JS animation at the next selected animal.
