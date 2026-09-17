@@ -72,7 +72,7 @@ jobs:
           print("health:", health["status"])
 
           animals = json.loads(get("/api/animals"))["animals"]
-          assert len(animals) == 22, f"expected 22 animals, got {len(animals)}"
+          assert len(animals) == 25, f"expected 25 animals, got {len(animals)}"
           print("animals:", len(animals))
 
           json.loads(get("/api/info"))
