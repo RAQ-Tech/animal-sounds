@@ -15,7 +15,7 @@ explicitly rather than assuming. Tick items off or delete them as they land.
   (supported to 2030-10-31); all five GitHub Actions are pinned to their latest major
   (`checkout@v7`, `setup-buildx-action@v4`, `build-push-action@v7`, `login-action@v4`,
   `metadata-action@v6`).
-- [x] **Both Flask security advisories cleared.** Neither could affect this app â€” both
+- [x] **Both Flask security advisories cleared.** Neither could affect this app — both
   concern signed session cookies, and a search for `session`, `secret_key` and
   `set_cookie` across `app/` returns nothing.
 - [x] **Dependency updates automated.** [.github/dependabot.yml](.github/dependabot.yml)
@@ -28,7 +28,7 @@ explicitly rather than assuming. Tick items off or delete them as they land.
 
 ---
 
-## Phase 1 â€” Correctness â€” DONE
+## Phase 1 — Correctness — DONE
 
 All four items shipped 2026-08-18, each with a regression test.
 
@@ -44,12 +44,12 @@ All four items shipped 2026-08-18, each with a regression test.
   anything playable is listed. This replaces three copies of the same checks that had
   drifted apart. Covered by a test over seven Linux-legal filenames Windows cannot create.
 - [x] **Symlinks resolving outside their directory are rejected**, by both the routes and
-  the index. Verified on Linux in CI â€” these two tests skip on Windows, so a green local
+  the index. Verified on Linux in CI — these two tests skip on Windows, so a green local
   run does not prove them.
 
 ---
 
-## Phase 2 â€” Production hardening â€” 3 of 4 done
+## Phase 2 — Production hardening — DONE
 
 - [x] **The container no longer runs Flask's development server.** It serves with
   `waitress` (pure Python, no compiler, works on Windows too). `app.run()` stays under
@@ -62,20 +62,20 @@ All four items shipped 2026-08-18, each with a regression test.
   to `info` with a warning instead of refusing to start. Verified end to end: at `info` the
   access log shows each request, at `warning` those lines disappear.
 - [x] **The app has access logging**, which it previously had none of. `/health` is
-  excluded â€” the container healthcheck hits it every 30 seconds and would bury everything
+  excluded — the container healthcheck hits it every 30 seconds and would bury everything
   else.
 - [x] **The duplicated healthcheck is gone.** One copy now, in the Dockerfile, so it
   applies wherever the image runs including Unraid.
 
-- [ ] **The container still runs as root.** No `USER` directive, so the app and everything
-  it writes into `/config` run as UID 0 â€” the usual cause of Unraid appdata permission
-  surprises. Held back deliberately: changing the user changes ownership expectations for
-  an appdata share that already exists, which can break a running deployment. See Open
-  questions.
+- [x] **The container runs without root.** The image uses UID 99/GID 100, matching normal
+  Unraid appdata ownership. Existing owners were inspected before the approved migration.
+  Six root-owned directories were corrected; all 82 existing files retained their bytes.
+  New uploads work as the non-root user. Compose can override the identity to match an
+  existing Linux folder; no whole-share permission change is required.
 
 ---
 
-## Phase 3 â€” Tests â€” DONE
+## Phase 3 — Tests — DONE
 
 - [x] **pytest suite added** under `tests/`: 41 tests covering catalog integrity, the
   Python-to-JavaScript `sound_pattern` contract, every route's shape, audio serving, nine
@@ -87,7 +87,7 @@ All four items shipped 2026-08-18, each with a regression test.
 
 ---
 
-## Phase 4 â€” Accessibility and polish
+## Phase 4 — Accessibility and polish — DONE
 
 - [x] **Reduced motion follows the device setting.** Decorative animations/transitions
   are removed and Pokeball travel is skipped, while sound and direct feeding still work.
@@ -104,7 +104,7 @@ All four items shipped 2026-08-18, each with a regression test.
 
 ---
 
-## Phase 5 â€” Features
+## Phase 5 — Features — DONE
 
 Ordered by improvement relative to effort.
 
