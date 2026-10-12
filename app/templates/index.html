@@ -4,8 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{ app_name }}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  <meta name="theme-color" content="#16353a" />
+  <link rel="icon" href="{{ static_url('icon.svg') }}" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="{{ static_url('icon-192.png') }}" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="stylesheet" href="{{ static_url('styles.css') }}" />
+  <script src="{{ static_url('app.js') }}" defer></script>
 </head>
 <body>
   <main class="app-shell">
@@ -41,15 +45,47 @@
           <span class="mini-pokeball" aria-hidden="true"></span>
           <span>Throw Pokeball</span>
         </button>
+        <label class="volume-control" for="volume">Volume
+          <input id="volume" aria-label="Volume" type="range" min="0" max="100" value="75" />
+          <output id="volume-value" for="volume">75%</output>
+        </label>
+        <button type="button" class="utility-button" id="stop-all">Stop all sounds</button>
+        <button type="button" class="utility-button" id="install-app" hidden>Install app</button>
       </div>
     </header>
 
+    <details class="upload-panel">
+      <summary>Add your own sounds</summary>
+      <form id="upload-form">
+        <label for="upload-animal">Animal</label>
+        <select id="upload-animal" name="animal_id">
+          {% for animal in animals %}<option value="{{ animal.id }}">{{ animal.name }}</option>{% endfor %}
+        </select>
+        <label for="upload-kind">Sound type</label>
+        <select id="upload-kind" name="kind">
+          <option value="sound">Animal sound</option><option value="chomp">Chomp sound</option>
+        </select>
+        <label for="upload-file">Audio file</label>
+        <input id="upload-file" name="file" type="file" accept=".mp3,.wav,.ogg,.m4a,.aac,.webm" required />
+        <button class="utility-button" type="submit">Upload sound</button>
+        <p id="upload-status" role="status">Choose a recording smaller than 16 MB. Existing sounds are kept.</p>
+      </form>
+    </details>
+
+    <nav class="animal-filters" aria-label="Animal groups">
+      <button type="button" data-group="all" aria-pressed="true">All animals</button>
+      <button type="button" data-group="farm" aria-pressed="false">Farm &amp; pets</button>
+      <button type="button" data-group="wild" aria-pressed="false">Wild</button>
+      <button type="button" data-group="birds" aria-pressed="false">Birds</button>
+      <button type="button" data-group="water" aria-pressed="false">Water</button>
+    </nav>
     <section class="animal-grid" aria-label="Animals">
       {% for animal in animals %}
       <button
         type="button"
         class="animal-card"
         data-animal-id="{{ animal.id }}"
+        data-group="{{ animal.group }}"
         data-animal-name="{{ animal.name }}"
         data-sound-label="{{ animal.sound_label }}"
         data-sound-pattern="{{ animal.sound_pattern }}"
@@ -67,6 +103,7 @@
         <span class="animal-copy">
           <span class="animal-name">{{ animal.name }}</span>
           <span class="sound-chip">{{ animal.sound_label }}</span>
+          <span class="local-file-count">No local sounds</span>
         </span>
       </button>
       {% endfor %}

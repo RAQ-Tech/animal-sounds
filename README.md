@@ -10,7 +10,10 @@ Animal Sounds is a lightweight, offline-friendly Flask WebUI for animal pictures
 - Includes a Throw Pokeball mode that launches a local CSS/JS animation at the next selected animal.
 - Includes a fixed feed pile with draggable pellets and chomp sounds.
 - Uses local HTML, CSS, JavaScript, and SVG assets only.
-- Keeps `/config` reserved as the primary persistent path for future settings and app state.
+- Saves shared sound-source and volume settings in `/config/settings.json`.
+- Uploads animal and chomp recordings from the browser without a login, preserving existing files.
+- Offers volume/stop controls, animal-group filters, local-file counts, dark mode, and reduced motion.
+- Supports home-screen installation and an offline generated-sound board on HTTPS or localhost.
 - Provides fast health and catalog API endpoints.
 
 ## Local Docker Quick Start
@@ -79,6 +82,9 @@ The app creates one folder per animal under `/config/audio/`:
 ├── owl/
 ├── pig/
 ├── rooster/
+├── roadrunner/
+├── toucan/
+├── narwhal/
 ├── seal/
 ├── sheep/
 ├── tiger/
@@ -99,9 +105,27 @@ Drop audio files into the matching animal folder. Supported file types are:
 .mp3 .wav .ogg .m4a .aac .webm
 ```
 
-The WebUI starts in **Generated** mode. Switch to **Local Files** mode to play files from `/config/audio`. If an animal has more than one file, repeated clicks cycle through the files in filename order. If an animal has no local files, the generated sound plays as a fallback.
+A fresh installation starts in **Generated** mode at 75% volume. The mode and volume are shared by browsers and saved on the server; existing browser-only mode is used as an offline fallback. Switch to **Local Files** mode to play files from `/config/audio`. If an animal has more than one file, repeated clicks cycle through the files in filename order. If an animal has no local files, the generated sound plays as a fallback.
 
 For feeding, drag a pellet from the fixed feed pile onto an animal. Feeding uses per-animal chomp files first, then shared files from `/config/audio/chomp/`, then a generated chomp fallback. Keyboard users can focus the feed pile, press Enter or Space, then activate an animal card to feed it.
+
+## Uploads and playback
+
+Open **Add your own sounds**, choose an animal, choose **Animal sound** or **Chomp sound**, select a supported audio file smaller than 16 MB, and press **Upload sound**. No login is required. Duplicate filenames receive a numbered suffix; existing recordings are never overwritten. A successful upload refreshes counts and switches to **Local Files** mode. Local files cycle in filename order.
+
+The volume slider affects both generated and recorded sounds. **Stop all sounds** stops animal and chomp playback. Group buttons filter the board; **All animals** restores every card. Dark mode follows your device, and reduced-motion mode removes decorative throwing/chomping movement.
+
+## Offline installation
+
+On HTTPS or localhost, the browser can install the app from its install menu; supporting browsers also show **Install app**. On iPhone/iPad, use Safari's **Add to Home Screen**. Load the board once while connected before going offline. The offline board includes all 25 pictures and generated sounds. Uploads, shared settings, and personal recordings require a connection; personal audio is not copied into the offline cache.
+
+A plain HTTP address on your LAN continues to work as an online soundboard, but browsers do not permit its offline worker. This release does not configure HTTPS, certificates, or a reverse proxy on your server. [Browser installation requirements](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Making_PWAs_installable).
+
+## Container file ownership
+
+The image runs as UID `99`, GID `100`, matching common Unraid appdata ownership. Compose can override these with `APP_UID` and `APP_GID` in `.env` to match an existing Linux folder. These variables are Compose options, not settings that change the running process inside an already-created container. Unraid can override the same identity through Docker's `--user UID:GID` extra parameter when needed.
+
+For an existing installation, back up appdata and inspect ownership before updating. The configured user must be able to create folders and files under `/config`; preserve recordings and unrelated files. Correct only the affected appdata permissions if needed, rather than changing an entire share. New Docker named volumes inherit the image's prepared `/config` ownership. With a fresh Linux bind mount, create the host directory with the intended owner before starting Compose. Windows Docker Desktop manages bind-mount permissions itself.
 
 ## Environment Variables
 
@@ -111,7 +135,9 @@ For feeding, drag a pellet from the fixed feed pile onto an animal. Feeding uses
 | `APP_ENV` | `production` | Environment label |
 | `LOG_LEVEL` | `info` | Application log level |
 | `HOST_PORT` | `8080` | Host-exposed port mapped to container `3000` |
-| `CONFIG_PATH` | `/config` | Primary persistent config/state path in container |
+| `CONFIG_PATH` | `/config` | Primary persistent path; Compose and Unraid map `/config` read/write |
+| `APP_UID` | `99` | Optional Compose runtime user ID; use the existing Linux folder owner |
+| `APP_GID` | `100` | Optional Compose runtime group ID |
 
 ## Unraid Install
 
@@ -142,9 +168,15 @@ http://<your-unraid-ip>:8080/health
 
 ```text
 .
+├── .github/                 # CI publication gates and Dependabot
+├── .dockerignore
+├── .env.example
+├── AGENTS.md
+├── BACKLOG.md               # Existing phased plan and qualification record
 ├── Dockerfile
 ├── docker-compose.yml
 ├── README.md
+├── tests/                   # Route, audio, settings, upload and catalog tests
 ├── unraid/
 │   ├── animal-sounds-icon.png
 │   └── template.xml
@@ -152,35 +184,29 @@ http://<your-unraid-ip>:8080/health
     ├── animals.py
     ├── main.py
     ├── requirements.txt
+    ├── requirements-dev.txt
     ├── static/
     │   ├── app.js
     │   ├── styles.css
-    │   └── animals/
-    │       ├── cat.svg
-    │       ├── chicken.svg
-    │       ├── cow.svg
-    │       ├── coyote.svg
-    │       ├── cricket.svg
-    │       ├── dog.svg
-    │       ├── dolphin.svg
-    │       ├── donkey.svg
-    │       ├── duck.svg
-    │       ├── elephant.svg
-    │       ├── goat.svg
-    │       ├── gorilla.svg
-    │       ├── horse.svg
-    │       ├── lion.svg
-    │       ├── monkey.svg
-    │       ├── owl.svg
-    │       ├── pig.svg
-    │       ├── rooster.svg
-    │       ├── seal.svg
-    │       ├── sheep.svg
-    │       ├── tiger.svg
-    │       └── tree-frog.svg
+    │   ├── icon.svg
+    │   ├── icon-192.png
+    │   ├── icon-512.png
+    │   └── animals/          # One SVG for each of the 25 catalog entries
     └── templates/
-        └── index.html
+        ├── index.html
+        └── service-worker.js
 ```
+
+## Verification
+
+```bash
+python -m pytest tests -q
+node --check app/static/app.js
+docker compose config --quiet
+docker compose up --build
+```
+
+Unit tests cover upload preservation, invalid/oversize uploads, folder containment, persistent settings and existing audio behavior. Linux CI also runs symlink tests that skip on Windows. The release workflow builds and smoke-tests the non-root container before publishing.
 
 ## Notes
 
@@ -188,6 +214,6 @@ http://<your-unraid-ip>:8080/health
 - Local audio files are user-managed under `/config/audio/<animal-id>/` and are not committed to the repo.
 - Chomp audio files are user-managed under `/config/audio/chomp/` and `/config/audio/<animal-id>/chomp/`.
 - Pokeball throwing is animation-only; it does not save capture state or write to `/config`.
-- The app keeps the internal container port fixed at `3000`.
-- `/config` is currently reserved for future settings/state and should remain mapped in Docker/Unraid deployments.
+- The app keeps the internal container port fixed at `3000` and exposes it on the configured host port.
+- `/config` stores shared settings and recordings and must remain mapped read/write across Docker/Unraid updates. Static asset URLs include a content version to avoid stale scripts after updates.
 - The UI intentionally stays framework-free to keep the project easy to extend.

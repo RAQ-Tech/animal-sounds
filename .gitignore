@@ -7,3 +7,6 @@ __pycache__/
 .venv/
 venv/
 config/
+.local/
+output/playwright/
+.playwright-mcp/

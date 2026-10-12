@@ -8,6 +8,15 @@
   const liveStatus = document.getElementById("sound-status");
   const SOUND_SOURCE_STORAGE_KEY = "animal-sounds-source";
   let audioContext = null;
+  let masterGain = null;
+  let volume = 0.75;
+  const activeSources = new Set();
+  let playbackEpoch = 0;
+  let settingsTouched = false;
+  let settingsWrites = Promise.resolve();
+  const volumeControl = document.getElementById("volume");
+  const volumeValue = document.getElementById("volume-value");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   let throwModeActive = false;
   let throwAnimationTimer = null;
   let activeThrowTarget = null;
@@ -32,6 +41,9 @@
 
     if (!audioContext) {
       audioContext = new AudioContextClass();
+      masterGain = audioContext.createGain();
+      masterGain.gain.value = volume;
+      masterGain.connect(audioContext.destination);
     }
 
     return audioContext;
@@ -64,6 +76,62 @@
     }
   }
 
+  function saveSettings(patch) {
+    settingsTouched = true;
+    settingsWrites = settingsWrites.then(async () => {
+      const response = await fetch("/api/settings", {
+        method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch),
+      });
+      if (!response.ok) throw new Error("Settings could not be saved.");
+    }).catch(() => setLiveStatus("Your choice works here, but could not be saved for other devices."));
+  }
+
+  function setVolume(value, persist = false) {
+    volume = Math.min(1, Math.max(0, Number(value)));
+    if (masterGain) masterGain.gain.setValueAtTime(volume, audioContext.currentTime);
+    if (currentLocalAudio) currentLocalAudio.volume = volume;
+    if (currentChompAudio) currentChompAudio.volume = volume;
+    if (volumeControl) volumeControl.value = String(Math.round(volume * 100));
+    if (volumeValue) volumeValue.textContent = `${Math.round(volume * 100)}%`;
+    if (persist) saveSettings({ volume });
+  }
+
+  async function loadSettings() {
+    try {
+      const response = await fetch("/api/settings", { cache: "no-store" });
+      if (!response.ok) throw new Error("Settings unavailable");
+      const settings = await response.json();
+      if (!settingsTouched) {
+        setVolume(settings.volume);
+        setSoundSourceMode(settings.sound_source, { persist: false, announce: false });
+        storeSoundSourceMode(settings.sound_source);
+      }
+    } catch {
+      setLiveStatus("Offline: generated sounds still work. Saved settings will return when connected.");
+    }
+  }
+
+  function trackSource(source) {
+    activeSources.add(source);
+    source.addEventListener("ended", () => activeSources.delete(source), { once: true });
+  }
+
+  function stopAllSounds() {
+    playbackEpoch += 1;
+    stopCurrentLocalAudio();
+    stopCurrentChompAudio();
+    activeSources.forEach(source => { try { source.stop(); } catch { /* Already stopped. */ } });
+    activeSources.clear();
+    cards.forEach(card => {
+      card.classList.remove("is-playing", "is-eating");
+      card.querySelector(".eating-crumbs")?.remove();
+    });
+    clearThrowAnimation();
+    setThrowMode(false);
+    setFeedMode(false);
+    setLiveStatus("All sounds stopped.");
+  }
+
   function updateSourceButtons() {
     sourceButtons.forEach((button) => {
       const isSelected = button.dataset.soundSource === soundSourceMode;
@@ -78,6 +146,7 @@
 
     if (options.persist !== false) {
       storeSoundSourceMode(soundSourceMode);
+      saveSettings({ sound_source: soundSourceMode });
     }
 
     // Files can be added to /config while this page is open. The index is only
@@ -109,6 +178,10 @@
       const fileCount = localAudioFilesFor(card).length;
       card.dataset.localAudioCount = String(fileCount);
       card.classList.toggle("has-local-audio", fileCount > 0);
+      const chompCount = localAudioByAnimal[card.dataset.animalId]?.chomp?.count || 0;
+      const countLabel = card.querySelector(".local-file-count");
+      if (countLabel) countLabel.textContent = `${fileCount} local sound${fileCount === 1 ? "" : "s"}` +
+        (chompCount ? ` · ${chompCount} chomp` : "");
     });
   }
 
@@ -202,7 +275,8 @@
       oscillator.connect(gain);
     }
 
-    gain.connect(context.destination);
+    gain.connect(masterGain);
+    trackSource(oscillator);
     oscillator.start(start);
     oscillator.stop(start + duration + 0.03);
   }
@@ -234,7 +308,8 @@
 
     source.connect(filter);
     filter.connect(gain);
-    gain.connect(context.destination);
+    gain.connect(masterGain);
+    trackSource(source);
     source.start(start);
     source.stop(start + duration);
   }
@@ -529,6 +604,7 @@
   }
 
   async function playLocalChomp(card) {
+    const epoch = playbackEpoch;
     const chompAudio = chompAudioFor(card);
     if (chompAudio.files.length === 0) {
       return false;
@@ -537,6 +613,7 @@
     const nextIndex = chompAudioIndexes[chompAudio.indexKey] || 0;
     const file = chompAudio.files[nextIndex % chompAudio.files.length];
     const audio = new Audio(file.url);
+    audio.volume = volume;
 
     chompAudioIndexes = {
       ...chompAudioIndexes,
@@ -567,10 +644,11 @@
     );
 
     await audio.play();
-    return true;
+    return epoch === playbackEpoch;
   }
 
   async function playGeneratedChomp() {
+    const epoch = playbackEpoch;
     stopCurrentChompAudio();
     stopCurrentLocalAudio();
 
@@ -579,6 +657,7 @@
       await context.resume();
     }
 
+    if (epoch !== playbackEpoch) return;
     const start = context.currentTime + 0.03;
     for (let index = 0; index < 3; index += 1) {
       const offset = index * 0.12;
@@ -625,6 +704,7 @@
   }
 
   async function feedAnimal(card) {
+    const epoch = playbackEpoch;
     const animalName = card.dataset.animalName;
 
     showEatingFeedback(card);
@@ -632,10 +712,11 @@
 
     try {
       const playedLocalChomp = await playLocalChomp(card);
-      if (!playedLocalChomp) {
+      if (!playedLocalChomp && epoch === playbackEpoch) {
         await playGeneratedChomp();
       }
     } catch {
+      if (epoch !== playbackEpoch) return;
       try {
         await playGeneratedChomp();
       } catch {
@@ -645,6 +726,7 @@
   }
 
   async function playGeneratedAnimal(card, statusMessage = null) {
+    const epoch = playbackEpoch;
     const patternName = card.dataset.soundPattern;
     const pattern = soundPatterns[patternName];
     const animalName = card.dataset.animalName;
@@ -661,6 +743,7 @@
       await context.resume();
     }
 
+    if (epoch !== playbackEpoch) return;
     const duration = pattern(context, context.currentTime + 0.03);
 
     card.classList.add("is-playing");
@@ -670,11 +753,13 @@
   }
 
   async function playLocalAnimal(card, files) {
+    const epoch = playbackEpoch;
     const animalId = card.dataset.animalId;
     const animalName = card.dataset.animalName;
     const nextIndex = localAudioIndexes[animalId] || 0;
     const file = files[nextIndex % files.length];
     const audio = new Audio(file.url);
+    audio.volume = volume;
 
     localAudioIndexes = {
       ...localAudioIndexes,
@@ -709,10 +794,12 @@
     );
 
     await audio.play();
+    if (epoch !== playbackEpoch) return;
     setLiveStatus(`Playing local file ${file.name} for ${animalName}.`);
   }
 
   async function playAnimal(card) {
+    const epoch = playbackEpoch;
     const animalName = card.dataset.animalName;
     const soundLabel = card.dataset.soundLabel;
     let generatedStatusMessage = null;
@@ -733,7 +820,7 @@
       }
     }
 
-    await playGeneratedAnimal(card, generatedStatusMessage);
+    if (epoch === playbackEpoch) await playGeneratedAnimal(card, generatedStatusMessage);
   }
 
   function clearThrowAnimation() {
@@ -764,7 +851,8 @@
   }
 
   function throwPokeball(targetCard) {
-    if (!throwLayer) {
+    if (!throwLayer || reducedMotion.matches) {
+      setLiveStatus(`Pokeball selected ${targetCard.dataset.animalName}.`);
       return;
     }
 
@@ -920,6 +1008,7 @@
   function activateCard(event) {
     const card = event.currentTarget;
     const shouldThrow = throwModeActive;
+    const activationEpoch = playbackEpoch;
 
     if (feedModeActive) {
       setFeedMode(false);
@@ -929,7 +1018,7 @@
 
     playAnimal(card)
       .then(() => {
-        if (!shouldThrow) {
+        if (!shouldThrow || activationEpoch !== playbackEpoch) {
           return;
         }
 
@@ -1023,10 +1112,70 @@
     }
   });
 
+  document.getElementById("stop-all")?.addEventListener("click", stopAllSounds);
+  volumeControl?.addEventListener("input", () => setVolume(Number(volumeControl.value) / 100));
+  volumeControl?.addEventListener("change", () => setVolume(Number(volumeControl.value) / 100, true));
+  const groupButtons = Array.from(document.querySelectorAll(".animal-filters [data-group]"));
+  groupButtons.forEach(button => button.addEventListener("click", () => {
+    const group = button.dataset.group;
+    cards.forEach(card => { card.hidden = group !== "all" && card.dataset.group !== group; });
+    groupButtons.forEach(option => option.setAttribute("aria-pressed", String(option === button)));
+    setLiveStatus(`${cards.filter(card => !card.hidden).length} animals shown.`);
+  }));
+
+  const uploadForm = document.getElementById("upload-form");
+  uploadForm?.addEventListener("submit", async event => {
+    event.preventDefault();
+    const status = document.getElementById("upload-status");
+    const submit = uploadForm.querySelector('[type="submit"]');
+    const file = document.getElementById("upload-file").files[0];
+    if (!file) return;
+    if (file.size >= 16 * 1024 * 1024) {
+      status.textContent = "Choose a file smaller than 16 MB.";
+      return;
+    }
+    submit.disabled = true;
+    status.textContent = "Adding your sound…";
+    try {
+      const response = await fetch("/api/audio/upload", { method: "POST", body: new FormData(uploadForm) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "The sound could not be uploaded.");
+      await refreshLocalAudioIndex();
+      setSoundSourceMode("local");
+      status.textContent = `Added ${result.filename}. Choose the animal to hear it!`;
+      document.getElementById("upload-file").value = "";
+    } catch (error) {
+      status.textContent = error.message || "Connect to the app to upload a sound.";
+    } finally {
+      submit.disabled = false;
+    }
+  });
+
+  let installPrompt = null;
+  const installButton = document.getElementById("install-app");
+  window.addEventListener("beforeinstallprompt", event => {
+    event.preventDefault(); installPrompt = event; installButton.hidden = false;
+  });
+  installButton?.addEventListener("click", async () => {
+    if (!installPrompt) return;
+    await installPrompt.prompt();
+    const choice = await installPrompt.userChoice;
+    installPrompt = null;
+    installButton.hidden = true;
+    if (choice.outcome === "accepted") setLiveStatus("Animal Sounds is ready for your home screen.");
+  });
+  window.addEventListener("appinstalled", () => { installButton.hidden = true; });
+  if ("serviceWorker" in navigator && window.isSecureContext) {
+    navigator.serviceWorker.register("/service-worker.js").catch(() => {
+      setLiveStatus("Offline installation is unavailable; the soundboard still works online.");
+    });
+  }
+
   setSoundSourceMode(getStoredSoundSourceMode(), {
     persist: false,
     announce: false,
     refresh: false,
   });
   refreshLocalAudioIndex();
+  loadSettings();
 })();

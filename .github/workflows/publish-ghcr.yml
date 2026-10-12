@@ -47,12 +47,12 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # The repo has no test suite, so this is the gate that stops a broken
-      # image reaching GHCR. It starts the container and exercises the same
+      # Integration gate: start the built image and exercise the same
       # endpoints the Docker and Unraid healthchecks rely on.
       - name: Smoke test image
         run: |
           docker run -d --name animal-sounds-ci -p 3000:3000 animal-sounds:ci
+          test "$(docker exec animal-sounds-ci id -u)" != "0"
           for _ in $(seq 1 30); do
             curl -fsS http://127.0.0.1:3000/health >/dev/null 2>&1 && break
             sleep 1
@@ -77,6 +77,13 @@ jobs:
 
           json.loads(get("/api/info"))
           json.loads(get("/api/audio"))
+          settings = json.loads(get("/api/settings"))
+          assert settings == {"sound_source": "generated", "volume": 0.75}, settings
+          manifest = json.loads(get("/manifest.webmanifest"))
+          for icon in manifest["icons"]:
+              assert get(icon["src"]).startswith(b"\x89PNG"), "missing app icon"
+          assert b"animal-sounds-" in get("/service-worker.js")
+          assert get("/favicon.ico")
           assert b"animal-card" in get("/"), "home page did not render animal cards"
           print("smoke test passed")
           PY

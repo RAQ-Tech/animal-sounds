@@ -9,7 +9,7 @@
   <Privileged>false</Privileged>
   <Support>https://github.com/RAQ-Tech/animal-sounds/issues</Support>
   <Project>https://github.com/RAQ-Tech/animal-sounds</Project>
-  <Overview>Offline-friendly animal picture and sound WebUI. Internal app port is fixed at 3000. /config remains the primary persistent appdata path for future settings.</Overview>
+  <Overview>Offline-friendly animal picture and sound WebUI. Internal app port is fixed at 3000. /config remains the primary persistent appdata path for settings and recordings.</Overview>
   <Category>MediaApp:Other Kids:Education</Category>
   <WebUI>http://[IP]:[PORT:1]</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/RAQ-Tech/animal-sounds/main/unraid/template.xml</TemplateURL>
@@ -17,7 +17,7 @@
 
   <Config Name="WebUI Port" Target="3000" Default="8080" Mode="tcp" Description="Host port mapped to container port 3000" Type="Port" Display="always" Required="true" Mask="false">8080</Config>
 
-  <Config Name="App Config (Primary)" Target="/config" Default="/mnt/user/appdata/animal-sounds" Mode="rw" Description="Primary persistent path for future settings/state (map to appdata)" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/animal-sounds</Config>
+  <Config Name="App Config (Primary)" Target="/config" Default="/mnt/user/appdata/animal-sounds" Mode="rw" Description="Primary persistent path for settings and recordings/state (map to appdata)" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/animal-sounds</Config>
 
   <Config Name="APP_NAME" Target="APP_NAME" Default="Animal Sounds" Mode="" Description="Display name in the UI and API responses" Type="Variable" Display="always" Required="false" Mask="false">Animal Sounds</Config>
   <Config Name="APP_ENV" Target="APP_ENV" Default="production" Mode="" Description="Application environment label" Type="Variable" Display="always" Required="false" Mask="false">production</Config>

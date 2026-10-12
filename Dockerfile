@@ -13,7 +13,10 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 COPY app /app
 
-RUN mkdir -p /config /data
+RUN mkdir -p /config /data && chown 99:100 /config /data
+
+# Match Unraid's usual nobody:users ownership; Compose may override these IDs.
+USER 99:100
 
 EXPOSE 3000
 

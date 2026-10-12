@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="cow-title">
+  <title id="cow-title">Playful cow illustration</title>
+  <rect width="240" height="180" rx="18" fill="#e8f7ff"/>
+  <path d="M0 132c34-13 65-15 95-8 39 10 76 8 145-14v70H0z" fill="#9be15d"/>
+  <ellipse cx="122" cy="101" rx="66" ry="39" fill="#fffaf1" stroke="#27313d" stroke-width="5"/>
+  <path d="M86 76c10-10 26-12 38-1-5 21-23 27-38 16zM133 99c8-17 28-22 46-9-4 20-24 30-43 21zM92 109c13 0 22 9 23 22-17 8-32 4-39-8z" fill="#30343b"/>
+  <circle cx="67" cy="77" r="25" fill="#fffaf1" stroke="#27313d" stroke-width="5"/>
+  <path d="M48 56l-16-16 25 3M83 55l18-16-27 3" fill="none" stroke="#c89d42" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="58" cy="73" r="4" fill="#27313d"/>
+  <circle cx="76" cy="73" r="4" fill="#27313d"/>
+  <ellipse cx="67" cy="87" rx="15" ry="10" fill="#f9b3c8" stroke="#27313d" stroke-width="4"/>
+  <circle cx="62" cy="88" r="2.5" fill="#27313d"/>
+  <circle cx="72" cy="88" r="2.5" fill="#27313d"/>
+  <path d="M82 133v25M119 137v25M156 134v25M45 131v24" stroke="#27313d" stroke-width="8" stroke-linecap="round"/>
+  <path d="M183 86c24 2 28-11 30-21" fill="none" stroke="#27313d" stroke-width="6" stroke-linecap="round"/>
+</svg>
