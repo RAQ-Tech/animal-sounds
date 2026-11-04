@@ -56,6 +56,9 @@ All four items shipped 2026-08-18, each with a regression test.
   `__main__` for local development. Waitress declares support only up to Python 3.13 while
   the image is on 3.14, so this was not taken on trust: the app was run under waitress on
   Python 3.14.6 and all five routes returned 200 before the change was committed.
+  The image moved to `python:3.15-slim` on 2026-11-03 (Dependabot #7). It was re-proved the
+  same way: CI built the 3.15 image, ran it under waitress as a non-root user, and every
+  smoke-test route answered, before the merge. The unit tests in CI now run on 3.15 too.
 - [x] **`LOG_LEVEL` does something.** `_configure_logging()` applies it at import and
   returns the level actually in effect, which is what `/api/info` now reports rather than
   echoing back a value that may not have been understood. An unrecognised value falls back
